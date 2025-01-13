@@ -1,4 +1,27 @@
-# (〇)安装Lerobot
+# LeRobot-JoyCon: Making AI for Robotics more accessible and Portable with JoyCon
+
+## Declaration
+
+This is a Lerobot branch for local acquisition deployment for the Chinese community (for some reason), and adds portable controls for Joycon as well as positive and negative kinematics controls.
+
+This repository is a fork of the following projects,:
+- [lerobot](https://github.com/huggingface/lerobot)
+- [joycon-robotics](https://github.com/box2ai-robotics/joycon-robotics)
+- [lerobot-kinematics](https://github.com/box2ai-robotics/lerobot-kinematics)
+
+---
+---
+---
+
+
+# LeRobot-JoyCon: 利用 JoyCon 让机器人具身智能更易于使用和携带
+
+## (〇)声明
+
+这是一个LeRobot的中国社区分支，用于的方便的本地画采集和部署（出于某些原因），并为 Joycon 添加了便携式遥操作以及正负运动学控制。
+
+
+# (一)安装Lerobot
 
 ### 0. 系统要求
 
@@ -47,7 +70,7 @@ conda install -y -c conda-forge "opencv>=4.10.0"
   (5) 其余的文件和目录入门之后可自行探索。
 
 ------------------------------------------------------------------------
-# (一)设备号查询
+# (二)设备号查询
 
 ### 1. 机械臂端口号查询
 
@@ -97,7 +120,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ------------------------------------------------------------------------
 
-# (二) 校准机械臂
+# (三) 校准机械臂
 
 ### 1. 校准指令
 
@@ -133,7 +156,7 @@ python lerobot/scripts/control_robot.py teleoperate \
 ```
 
 ------------------------------------------------------------------------
-# (三) 记录数据集
+# (四) 记录数据集
 
 ### 1. 查看相机
 
@@ -243,7 +266,7 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
 ```
 
 ------------------------------------------------------------------------
-# (四) 本地训练和推理
+# (五) 本地训练和推理
 
 由于Huggingface建议使用它们的云托管，所以本地训练模型需要一定的设置
 
@@ -316,7 +339,7 @@ python lerobot/scripts/control_robot.py record \
 ```
 
 ------------------------------------------------------------------------
-# (五) 进阶
+# (六) 进阶
 
 如果你按照步骤完成：``①机械臂配置 => ②数据集采集 => ③模型训练 => ④模型推理部署 => ⑤机械臂按照演示轨迹动起来``。
 
@@ -399,7 +422,7 @@ Diffusion Policy通常被认为比ALoha-ACT的模型更聪明更具有泛化性�
 
 
 ------------------------------------------------------------------------
-# (六)JoyCon手柄遥操作
+# (七)JoyCon手柄遥操作
 
 ### 1. 蓝牙连接
 
