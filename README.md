@@ -249,7 +249,7 @@ python lerobot/scripts/visualize_dataset.py \
 rerun datasets/so100_test/visualize/task_so100_test_episode_0.rrd
 ```
 
-<img src="box_media_rerun.png" style="width: 600px;" />
+<img src="media/rerun.png" style="width: 600px;" />
 
 ### 6. 重播数据集
 
