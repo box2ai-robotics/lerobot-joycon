@@ -26,7 +26,7 @@ This repository is a fork of the following projects,:
 ### 0. 系统要求
 
   1. Ubuntu 20.04
-  2. 可连接蓝牙设备
+  2. 可连接蓝牙设备(使用JoyCon遥操作)
   
 ### 1. 安装Miniconda
   
