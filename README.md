@@ -18,7 +18,7 @@ This repository is a fork of the following projects,:
 
 ## (〇)声明
 
-这是一个LeRobot的中国社区分支，用于的方便的本地画采集和部署（出于某些原因），并为 Joycon 添加了便携式遥操作以及正负运动学控制。
+这是一个LeRobot的中国社区分支，用于的方便的**本地化采集和部署**（出于某些原因），并为 Joycon 添加了便携式遥操作以及正负运动学控制。
 
 
 ## (一)安装Lerobot
