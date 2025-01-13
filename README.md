@@ -61,7 +61,7 @@ conda install -y -c conda-forge "opencv>=4.10.0"
 
   (1) 主要的模型和配置文件在``lerobot``中，其余同级目录如docker,media等不重要
   
-  (2) 主要**配置**文件夹是``lerobot/configs``，其中重点关注，``机器人(robot)``，``模型(policy)``的``lerobot/configs/robot/so100.yaml``，``/home/boxjod/lerobot/New/lerobot/lerobot/configs/policy/act_so100_real.yaml``
+  (2) 主要**配置**文件夹是``lerobot/configs``，其中重点关注，``机器人(robot)``，``模型(policy)``的``lerobot/configs/robot/so100.yaml``，``lerobot/configs/policy/act_so100_real.yaml``
   
   (3) ``lerobot/scripts``中的``lerobot/scripts/control_robot.py``是控制机器人的入口python程序。
   
