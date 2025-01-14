@@ -9,33 +9,42 @@ This repository is a fork of the following projects,:
 - [joycon-robotics](https://github.com/box2ai-robotics/joycon-robotics)
 - [lerobot-kinematics](https://github.com/box2ai-robotics/lerobot-kinematics)
 
+&nbsp;
 ---
 ---
----
+&nbsp;
 
 
 # LeRobot-JoyCon: 利用 JoyCon 让机器人具身智能更易于使用和携带
 
-## (〇)声明
+## (〇) 声明
 
 这是一个LeRobot的中国社区分支，用于的方便的**本地化采集和部署**（出于某些原因），并为 Joycon 添加了便携式遥操作以及正负运动学控制。
 
+&nbsp;
+---
+&nbsp;
 
-## (一)安装Lerobot
+# (一) 安装Lerobot
 
 ### 0. 系统要求
 
   1. Ubuntu 20.04
-  2. 可连接蓝牙设备(使用JoyCon遥操作)
+  2. 可连接蓝牙设备
   
-### 1. 安装Miniconda
+  ### 1. 安装Miniforge或者MiniConda
   
 ```shell
-mkdir -p ~/miniconda3
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-rm ~/miniconda3/miniconda.sh
-~/miniconda3/bin/conda init bash
+# 安装Miniforge
+wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" --no-check-certificate
+
+# 或者安装MiniConda
+# mkdir -p ~/miniconda3
+# bash Miniforge3-$(uname)-$(uname -m).sh
+# wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+# bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+# rm ~/miniconda3/miniconda.sh
+# ~/miniconda3/bin/conda init bash
 ```
 
 ### 2. 使用conda配置lerobot环境
@@ -51,6 +60,9 @@ pip install -e ".[feetech]"
 conda install -y -c conda-forge ffmpeg
 pip uninstall -y opencv-python
 conda install -y -c conda-forge "opencv>=4.10.0"
+
+# 配置库文件链接
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib' >> ~/.bashrc
 ```
 
 ！！ 如果你遇到报错，请检查是否报错中存在 ``network`` ， ``timeout``等网络问题，请检查pip是否更换为国内镜像源，具体参考[pip清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/)，[Ubuntu清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/)
@@ -61,7 +73,7 @@ conda install -y -c conda-forge "opencv>=4.10.0"
 
   (1) 主要的模型和配置文件在``lerobot``中，其余同级目录如docker,media等不重要
   
-  (2) 主要**配置**文件夹是``lerobot/configs``，其中重点关注，``机器人(robot)``，``模型(policy)``的``lerobot/configs/robot/so100.yaml``，``lerobot/configs/policy/act_so100_real.yaml``
+  (2) 主要**配置**文件夹是``lerobot/configs``，其中重点关注，``机器人(robot)``，``模型(policy)``的``lerobot/configs/robot/so100.yaml``，``/home/boxjod/lerobot/New/lerobot/lerobot/configs/policy/act_so100_real.yaml``
   
   (3) ``lerobot/scripts``中的``lerobot/scripts/control_robot.py``是控制机器人的入口python程序。
   
@@ -69,8 +81,10 @@ conda install -y -c conda-forge "opencv>=4.10.0"
   
   (5) 其余的文件和目录入门之后可自行探索。
 
+&nbsp;
 ------------------------------------------------------------------------
-## (二)设备号查询
+&nbsp;
+# (二) 设备号查询
 
 ### 1. 机械臂端口号查询
 
@@ -118,9 +132,12 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
   (6) 更新到 ``lerobot/configs/robot/so100.yaml`` 中的，主臂的port改成``/dev/lerobot_tty0``，从臂改成``/dev/lerobot_tty1``.（这是在99-lerobot-serial.rules中设置的）
 
-------------------------------------------------------------------------
+如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
-## (三) 校准机械臂
+&nbsp;
+------------------------------------------------------------------------
+&nbsp;
+# (三) 校准机械臂
 
 ### 1. 校准指令
 
@@ -155,8 +172,12 @@ python lerobot/scripts/control_robot.py teleoperate \
     --display-cameras 0
 ```
 
+如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
+
+&nbsp;
 ------------------------------------------------------------------------
-## (四) 记录数据集
+&nbsp;
+# (四) 记录数据集
 
 ### 1. 查看相机
 
@@ -195,6 +216,13 @@ python lerobot/common/robot_devices/cameras/opencv.py
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100.yaml 
 ```
+
+!! 如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
+```shell
+  python -m pip uninstall torch torchvision torchaudio
+  python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
+```
+如果在lerobot工作空间安装了genesis会影响到torch版本，这个时候就要重新安装一下torch
 
 ### 4. 录制数据集
 
@@ -267,8 +295,11 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
 
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
+&nbsp;
 ------------------------------------------------------------------------
-## (五) 本地训练和推理
+&nbsp;
+
+# (五) 本地训练和推理
 
 由于Huggingface建议使用它们的云托管，所以本地训练模型需要一定的设置
 
@@ -307,6 +338,7 @@ local_only:
 
 ### 2. 开始本地训练
 
+
 ```shell
 python lerobot/scripts/train.py \
   policy=act_so100_real \
@@ -338,9 +370,10 @@ python lerobot/scripts/control_robot.py record \
   --single-task eval_so100_test \
   -p outputs/train/act_so100_test/checkpoints/last/pretrained_model 
 ```
-
+&nbsp;
 ------------------------------------------------------------------------
-## (六) 进阶
+&nbsp;
+# (六) 进阶
 
 如果你按照步骤完成：``①机械臂配置 => ②数据集采集 => ③模型训练 => ④模型推理部署 => ⑤机械臂按照演示轨迹动起来``。
 
@@ -419,12 +452,39 @@ Diffusion Policy通常被认为比ALoha-ACT的模型更聪明更具有泛化性�
 
 - [observation.imag](lerobot/configs/policy/diffusion.yaml:64)：增大图像输入尺寸，可退有更大的视野，建议修改为[3, 480, 640]
 
-- [crop_shape](lerobot/configs/policy/diffusion.yaml:79)：增大随机裁剪尺寸，输入图像尺寸为640x480，建议修改为[440， 560]，可以更快的收敛一些，但泛化性会相对下降
+- [crop_shape](lerobot/configs/policy/diffusion.yaml:79)：增大随机裁剪尺寸，输入图像尺寸为640x480，建议修改为[440， 560]，保留更大的视野，可以更快的收敛一些，但泛化性会相对下降
 
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
+&nbsp;
 ------------------------------------------------------------------------
-## (七)JoyCon手柄遥操作
+&nbsp;
+
+# (七)JoyCon手柄遥操作
+
+### 0. 环境配置
+
+手柄遥操作需要用到Joycon-robotics安装手柄驱动和遥操策略，以及正逆运动学库lerobot-kinematics，进行姿态结算。
+
+- [joycon-robotics](https://github.com/box2ai-robotics/joycon-robotics)
+
+- [lerobot-kinematics](https://github.com/box2ai-robotics/lerobot-kinematics)
+
+安装指令如下：
+
+```shell
+# joycon-robotics
+git clone https://github.com/box2ai-robotics/joycon-robotics.git
+cd joycon-robotics
+pip install -e .
+make install
+cd ..
+
+# lerobot-kinematics
+git clone https://github.com/box2ai-robotics/lerobot-kinematics.git
+cd lerobot-kinematics
+pip install -e .
+```
 
 ### 1. 蓝牙连接
 
@@ -435,24 +495,79 @@ Diffusion Policy通常被认为比ALoha-ACT的模型更聪明更具有泛化性�
  (3) 若已连接配对成功之后，下一次连接相同的电脑只需要按下上扳机键，即可自动搜索快速匹配，5秒内机会出现一定频率的“确定震动”，按照上一步的操作即可连接成功。
  
  
-### 2. 手柄遥操Lerobot机械臂(未完待续....)
+### 2. 手柄遥操
+
+ (1) 重命名矫正参数文件
+
+需要将上述机械臂校准的文件重命名一下: 
+
+``main_follower.json`` 拷贝重命名为 ``right_follower.json``;
+
+``main_leader.json`` 拷贝重命名为 ``left_follower.json``
+
+可以执行下面的指令快速地重命名：
+
+```shell
+cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json
+cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/left_follower.json
+```
+
+(2) 单臂使用遥控器遥操作:
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
-    --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
-    --robot-overrides '~cameras' \
-    --display-cameras 0
+    --robot-path lerobot/configs/robot/so100_joycon_single.yaml 
 ```
 
+如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
 
+### 3. 手柄遥操数据集采集
+
+注意是修改了其中的``so100.yaml``：
+- ``so100_joycon_single.yaml``：即可使用右边手柄操控右边手臂
+- ``so100_joycon.yaml``：即可使用右边手柄操控双臂采集
+
+剩下的操作和上述遥操操作一致，祝您玩得愉快
 
 ```shell
+# 1.数据录制
+python lerobot/scripts/control_robot.py record \
+    --robot-path lerobot/configs/robot/so100_joycon.yaml \
+    --fps 30 \
+    --tags so100 tutorial \
+    --warmup-time-s 5 \
+    --episode-time-s 40 \
+    --reset-time-s 10 \
+    --num-episodes 你想录多少个数据如:50 \
+    --push-to-hub 0 \
+    --root datasets/换成你的任务的名字如:pick \
+    --repo-id task/换成你的任务的名字如:pick \
+    --single-task 换成你的任务的名字如:pick
 
-```
+# 2.模型训练
+python lerobot/scripts/train.py \
+  policy=act_so100_real \
+  env=so100_real \
+  device=cuda \
+  wandb.enable=false \
+  local_only.enable=true \
+  dataset_repo_id=task/换成你的任务的名字如:pick \
+  hydra.run.dir=outputs/train/换成你的任务的名字如:pick \
+  hydra.job.name=换成你的任务的名字如:pick \
+  local_only.path=datasets/换成你的任务的名字如:pick 
 
-
-
-```shell
-
+# 3. 模型推理
+python lerobot/scripts/control_robot.py record \
+  --robot-path lerobot/configs/robot/so100_joycon.yaml \
+  --fps 30 \
+  --tags so100 tutorial eval \
+  --warmup-time-s 5 \
+  --episode-time-s 40 \
+  --reset-time-s 10 \
+  --num-episodes 10 \
+  --repo-id task/eval_换成你的任务的名字如:pick \
+  --single-task eval_换成你的任务的名字如:pick \
+  -p outputs/train/act_换成你的任务的名字如:pick/checkpoints/last/pretrained_model 
   
 ```
+

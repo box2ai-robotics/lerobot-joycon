@@ -336,6 +336,9 @@ class OpenCVCamera:
         # Note: For some unknown reason, calling `isOpened` blocks the camera which then
         # needs to be re-created.
         self.camera = cv2.VideoCapture(camera_idx)
+        self.camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
+        self.camera.set(cv2.CAP_PROP_FPS, 60)
+        
 
         if self.fps is not None:
             self.camera.set(cv2.CAP_PROP_FPS, self.fps)

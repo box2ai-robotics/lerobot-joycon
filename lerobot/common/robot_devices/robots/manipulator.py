@@ -55,7 +55,8 @@ class ManipulatorRobotConfig:
     leader_arms: dict[str, MotorsBus] = field(default_factory=lambda: {})
     follower_arms: dict[str, MotorsBus] = field(default_factory=lambda: {})
     cameras: dict[str, Camera] = field(default_factory=lambda: {})
-
+    controllers: dict = None
+    
     # Optionally limit the magnitude of the relative positional target vector for safety purposes.
     # Set this to a positive scalar to have the same value for all motors, or a list that is the same length
     # as the number of motors in your follower arms (assumes all follower arms have the same number of
@@ -220,7 +221,13 @@ class ManipulatorRobot:
         self.calibration_dir = Path(calibration_dir)
 
         self.robot_type = self.config.robot_type
-        self.leader_arms = self.config.leader_arms
+        # self.leader_arms = self.config.leader_arms
+        self.controllers = self.config.controllers
+        if self.controllers is not None:
+            self.leader_arms = {}
+        else:
+            self.leader_arms = self.config.leader_arms
+            
         self.follower_arms = self.config.follower_arms
         self.cameras = self.config.cameras
         self.is_connected = False
@@ -287,7 +294,12 @@ class ManipulatorRobot:
                 "ManipulatorRobot is already connected. Do not run `robot.connect()` twice."
             )
 
-        if not self.leader_arms and not self.follower_arms and not self.cameras:
+        # if not self.leader_arms and not self.follower_arms and not self.cameras:
+        #     raise ValueError(
+        #         "ManipulatorRobot doesn't have any device to connect. See example of usage in docstring of the class."
+        #     )
+        # if not self.leader_arms and not self.follower_arms and not self.cameras:
+        if not self.leader_arms and not self.follower_arms and not self.cameras and not self.controllers:
             raise ValueError(
                 "ManipulatorRobot doesn't have any device to connect. See example of usage in docstring of the class."
             )
@@ -511,12 +523,28 @@ class ManipulatorRobot:
 
         # Prepare to assign the position of the leader to the follower
         leader_pos = {}
-        for name in self.leader_arms:
-            before_lread_t = time.perf_counter()
-            leader_pos[name] = self.leader_arms[name].read("Present_Position")
-            leader_pos[name] = torch.from_numpy(leader_pos[name])
-            self.logs[f"read_leader_{name}_pos_dt_s"] = time.perf_counter() - before_lread_t
-
+        # for name in self.leader_arms:
+        #     before_lread_t = time.perf_counter()
+        #     leader_pos[name] = self.leader_arms[name].read("Present_Position")
+        #     leader_pos[name] = torch.from_numpy(leader_pos[name])
+        #     self.logs[f"read_leader_{name}_pos_dt_s"] = time.perf_counter() - before_lread_t
+        
+        if self.controllers is not None:
+            controller_command={}
+            for name in self.controllers:
+                # Get positions from controller
+                before_controller_read_t = time.perf_counter()
+                present_pos = self.follower_arms[name].read("Present_Position")
+                controller_command[name] = self.controllers[name].get_command(present_pos)
+                leader_pos[name] = torch.from_numpy(np.array(controller_command[name]))
+                self.logs["read_controller_{name}_command_dt_s"] = time.perf_counter() - before_controller_read_t
+        else:
+            for name in self.leader_arms:
+                before_lread_t = time.perf_counter()
+                leader_pos[name] = self.leader_arms[name].read("Present_Position")
+                leader_pos[name] = torch.from_numpy(leader_pos[name])
+                self.logs[f"read_leader_{name}_pos_dt_s"] = time.perf_counter() - before_lread_t
+                
         # Send goal position to the follower
         follower_goal_pos = {}
         for name in self.follower_arms:

@@ -128,3 +128,7 @@ wandb:
   disable_artifact: false
   project: lerobot
   notes: ""
+
+local_only:
+  enable: true
+  path: ???

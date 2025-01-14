@@ -76,8 +76,8 @@ policy:
   # Architecture / modeling.
   # Vision backbone.
   vision_backbone: resnet18
-  crop_shape: [84, 84]
-  crop_is_random: True
+  crop_shape: [440,560] # [84, 84]
+  crop_is_random: False
   pretrained_backbone_weights: null
   use_group_norm: True
   spatial_softmax_num_keypoints: 32

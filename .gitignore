@@ -153,3 +153,12 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+
+.cache/calibration/main_follower.json
+.cache/calibration/main_leader.json
+.cache/calibration/so100/left_follower.json
+.cache/calibration/so100/main_follower.json
+.cache/calibration/so100/main_leader.json
+.cache/calibration/so100/right_follower.json
+.vscode
