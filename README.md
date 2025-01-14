@@ -10,10 +10,6 @@ This repository is a fork of the following projects,:
 - [lerobot-kinematics](https://github.com/box2ai-robotics/lerobot-kinematics)
 
 &nbsp;
----
----
-&nbsp;
-
 
 # LeRobot-JoyCon: 利用 JoyCon 让机器人具身智能更易于使用和携带
 
@@ -21,8 +17,6 @@ This repository is a fork of the following projects,:
 
 这是一个LeRobot的中国社区分支，用于的方便的**本地化采集和部署**（出于某些原因），并为 Joycon 添加了便携式遥操作以及正负运动学控制。
 
-&nbsp;
----
 &nbsp;
 
 # (一) 安装Lerobot
@@ -82,8 +76,7 @@ echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib' >> 
   (5) 其余的文件和目录入门之后可自行探索。
 
 &nbsp;
-------------------------------------------------------------------------
-&nbsp;
+
 # (二) 设备号查询
 
 ### 1. 机械臂端口号查询
@@ -135,8 +128,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
 &nbsp;
-------------------------------------------------------------------------
-&nbsp;
+
 # (三) 校准机械臂
 
 ### 1. 校准指令
@@ -296,8 +288,7 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
 &nbsp;
-------------------------------------------------------------------------
-&nbsp;
+
 
 # (五) 本地训练和推理
 
@@ -371,8 +362,7 @@ python lerobot/scripts/control_robot.py record \
   -p outputs/train/act_so100_test/checkpoints/last/pretrained_model 
 ```
 &nbsp;
-------------------------------------------------------------------------
-&nbsp;
+
 # (六) 进阶
 
 如果你按照步骤完成：``①机械臂配置 => ②数据集采集 => ③模型训练 => ④模型推理部署 => ⑤机械臂按照演示轨迹动起来``。
@@ -457,8 +447,7 @@ Diffusion Policy通常被认为比ALoha-ACT的模型更聪明更具有泛化性�
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
 &nbsp;
-------------------------------------------------------------------------
-&nbsp;
+
 
 # (七)JoyCon手柄遥操作
 
