@@ -133,27 +133,37 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ### 1. 校准指令
 
+这里``请插入两根机械臂``，如果按照上述顺序配置，对应关系如下，摆到对应位置之后，再命令终端``敲击回车``，进入下一个姿态矫正，各个姿态如下图所示。
+- lerobot_tty0 == ``左臂`` ==> 校准时会提示校准 ``main follower``
+- lerobot_tty1 == ``右臂`` ==> 校准时会提示校准 ``main leader``
+
+一般会从Follower开始，即右边机械臂开始，然后是左边机械臂
+
 ```shell
 # 注意，每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
 python lerobot/scripts/control_robot.py calibrate \
     --robot-path lerobot/configs/robot/so100.yaml \
     --robot-overrides '~cameras'
 ```
+
+**注意``2 Rortated position``，整个机械臂姿态方向一定要观察清楚。**
+
+
+| 1. Follower Zero position | 2. Follower Rotated position | 3. Follower Rest position |
+|---|---|---|
+| <img src="./media/so100/follower_zero.webp?raw=true" alt="SO-100 follower arm zero position" title="SO-100 follower arm zero position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/follower_rotated.webp?raw=true" alt="SO-100 follower arm rotated position" title="SO-100 follower arm rotated position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/follower_rest.webp?raw=true" alt="SO-100 follower arm rest position" title="SO-100 follower arm rest position" style="max-width: 300px; height: auto;"> |
+
+<!-- | 1. Leader Zero position | 2. Leader Rotated position | 3. Leader Rest position |
+|---|---|---|
+| <img src="./media/so100/leader_zero.webp?raw=true" alt="SO-100 leader arm zero position" title="SO-100 leader arm zero position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rotated.webp?raw=true" alt="SO-100 leader arm rotated position" title="SO-100 leader arm rotated position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rest.webp?raw=true" alt="SO-100 leader arm rest position" title="SO-100 leader arm rest position" style="max-width: 300px; height: auto;"> | -->
+
+
 !!如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
 
 ```shell
   python -m pip uninstall torch torchvision torchaudio
   python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
 ```
-
-| 1. Leader Zero position | 2. Leader Rotated position | 3. Leader Rest position |
-|---|---|---|
-| <img src="./media/so100/leader_zero.webp?raw=true" alt="SO-100 leader arm zero position" title="SO-100 leader arm zero position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rotated.webp?raw=true" alt="SO-100 leader arm rotated position" title="SO-100 leader arm rotated position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rest.webp?raw=true" alt="SO-100 leader arm rest position" title="SO-100 leader arm rest position" style="max-width: 300px; height: auto;"> |
-
-| 1. Follower Zero position | 2. Follower Rotated position | 3. Follower Rest position |
-|---|---|---|
-| <img src="./media/so100/follower_zero.webp?raw=true" alt="SO-100 follower arm zero position" title="SO-100 follower arm zero position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/follower_rotated.webp?raw=true" alt="SO-100 follower arm rotated position" title="SO-100 follower arm rotated position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/follower_rest.webp?raw=true" alt="SO-100 follower arm rest position" title="SO-100 follower arm rest position" style="max-width: 300px; height: auto;"> |
-
 
 ### 2. 无相机观察的遥操作测试（左臂遥控右臂）
 
@@ -560,3 +570,17 @@ python lerobot/scripts/control_robot.py record \
   
 ```
 
+```shell
+python lerobot/scripts/control_robot.py record \
+    --robot-path lerobot/configs/robot/so100_joycon.yaml \
+    --fps 30 \
+    --tags so100 tutorial \
+    --warmup-time-s 5 \
+    --episode-time-s 120 \
+    --reset-time-s 10 \
+    --num-episodes 2 \
+    --push-to-hub 0 \
+    --root datasets/pick \
+    --repo-id task/pick \
+    --single-task pick
+```

@@ -162,3 +162,6 @@ cython_debug/
 .cache/calibration/so100/main_leader.json
 .cache/calibration/so100/right_follower.json
 .vscode
+
+datasets/**
+

@@ -1,3 +1,3 @@
-SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="58FA083246", MODE="0777", SYMLINK+="lerobot_tty0"
-SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="58FA083324", MODE="0777", SYMLINK+="lerobot_tty1"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="58FA095280", MODE="0777", SYMLINK+="lerobot_tty0"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="58FA082761", MODE="0777", SYMLINK+="lerobot_tty1"
 
