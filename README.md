@@ -26,7 +26,7 @@ This repository is a fork of the following projects,:
   1. Ubuntu 20.04
   2. 可连接蓝牙设备
   
-  ### 1. 安装Miniforge或者MiniConda
+### 1. 安装Miniforge或者MiniConda
   
 ```shell
 # 安装Miniforge
@@ -74,6 +74,8 @@ echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib' >> 
   (4) **模型训练和推理**的主要文件是：``训练 lerobot/scripts/train.py``， ``推理 lerobot/scripts/eval.py``
   
   (5) 其余的文件和目录入门之后可自行探索。
+
+Note: 建议``使用Vscode打开lerobot-joycon工程目录``，打开readme.md文件之后右上角从左到右第二个图标``"打开侧边栏预览"``，可以查看更加美观的排版哦~
 
 &nbsp;
 
@@ -518,6 +520,13 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_single.yaml 
 ```
 
+(3) 双臂使用遥控器遥操作:
+
+```shell
+python lerobot/scripts/control_robot.py teleoperate \
+    --robot-path lerobot/configs/robot/so100_joycon.yaml 
+```
+
 如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
 
 ### 3. 手柄遥操数据集采集
@@ -569,6 +578,8 @@ python lerobot/scripts/control_robot.py record \
   -p outputs/train/act_换成你的任务的名字如:pick/checkpoints/last/pretrained_model 
   
 ```
+
+NOTE: 如果已经采集过的数据集，需要重新采集的话，需要删掉[datasets](datasets)目录下的数据集文件夹。
 
 ```shell
 python lerobot/scripts/control_robot.py record \
