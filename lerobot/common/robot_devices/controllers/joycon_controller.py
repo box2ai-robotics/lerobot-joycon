@@ -52,7 +52,7 @@ class JoyConController:
                     close_y=True, 
                     limit_dof=True, 
                     init_gpos=self.init_gpos, 
-                    dof_speed=[0.5, 0.5, 0.5, 0.5, 0.5, 0.2], 
+                    dof_speed=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5], 
                     common_rad=False,
                     lerobot=True
                 )
@@ -64,7 +64,10 @@ class JoyConController:
                 time.sleep(1)  # 连接失败后等待 1 秒重试
         else:
             print("Failed to connect after several attempts.")
-                            
+        
+        
+        self.next_episode_button = 0
+        self.restart_episode_button = 0
         self.target_gpos_last = self.init_gpos.copy()      
         
     def get_command(self, present_pose):
@@ -92,6 +95,7 @@ class JoyConController:
         
         qpos_inv_mujoco, IK_success = lerobot_IK(fd_qpos_mucojo, right_target_gpos, robot=self.robot)
         
+        joint_angles = self.target_qpos
         if IK_success:
             self.target_qpos = np.concatenate(([yaw,], qpos_inv_mujoco[:4], [gripper_state_r,])) 
 
@@ -103,16 +107,23 @@ class JoyConController:
             joint_angles[1] = -joint_angles[1]
             joint_angles[0] = -joint_angles[0]
             joint_angles[4] = -joint_angles[4]
-            
-            return joint_angles
 
         else:
             self.target_gpos = self.target_gpos_last.copy()
             self.joyconrobotics.set_position = self.target_gpos[0:3]
-            
-            return self.target_qpos
         
-    
-        #TODO:多线程姿态解析
+        
+        self.next_episode_button = self.joyconrobotics.listen_button('a')
+        self.restart_episode_button = self.joyconrobotics.listen_button('y')
+        
+        if self.next_episode_button == 1:
+            self.button_control = 1
+        elif self.restart_episode_button == 1:
+            self.button_control = -1
+        else:
+            self.button_control = 0
+            
+        return joint_angles, self.button_control
+        
         
         #TODO:增加按键控制数据集

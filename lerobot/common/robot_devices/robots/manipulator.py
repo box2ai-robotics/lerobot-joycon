@@ -232,6 +232,8 @@ class ManipulatorRobot:
         self.cameras = self.config.cameras
         self.is_connected = False
         self.logs = {}
+        
+        self.button_control = 0
 
     def get_motor_names(self, arm: dict[str, MotorsBus]) -> list:
         return [f"{arm}_{motor}" for arm, bus in arm.items() for motor in bus.motors]
@@ -250,8 +252,10 @@ class ManipulatorRobot:
 
     @property
     def motor_features(self) -> dict:
-        action_names = self.get_motor_names(self.leader_arms)
-        state_names = self.get_motor_names(self.leader_arms)
+        
+        action_names = self.get_motor_names(self.follower_arms)
+        state_names = self.get_motor_names(self.follower_arms)
+            
         return {
             "action": {
                 "dtype": "float32",
@@ -535,7 +539,7 @@ class ManipulatorRobot:
                 # Get positions from controller
                 before_controller_read_t = time.perf_counter()
                 present_pos = self.follower_arms[name].read("Present_Position")
-                controller_command[name] = self.controllers[name].get_command(present_pos)
+                controller_command[name], self.button_control = self.controllers[name].get_command(present_pos)              
                 leader_pos[name] = torch.from_numpy(np.array(controller_command[name]))
                 self.logs["read_controller_{name}_command_dt_s"] = time.perf_counter() - before_controller_read_t
         else:

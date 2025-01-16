@@ -305,7 +305,7 @@ def record(
             log_say("Reset the environment", play_sounds)
             reset_environment(robot, events, reset_time_s)
 
-        if events["rerecord_episode"]:
+        if events["rerecord_episode"] or robot.button_control == -1:
             log_say("Re-record episode", play_sounds)
             events["rerecord_episode"] = False
             events["exit_early"] = False
