@@ -53,7 +53,7 @@ class JoyConController:
                     close_y=True, 
                     limit_dof=True, 
                     init_gpos=self.init_gpos, 
-                    dof_speed=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5], 
+                    # dof_speed=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5], 
                     common_rad=False,
                     lerobot=True
                 )
