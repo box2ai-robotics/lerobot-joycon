@@ -539,7 +539,11 @@ class ManipulatorRobot:
                 # Get positions from controller
                 before_controller_read_t = time.perf_counter()
                 present_pos = self.follower_arms[name].read("Present_Position")
-                controller_command[name], self.button_control = self.controllers[name].get_command(present_pos)              
+                controller_command[name], button_control = self.controllers[name].get_command(present_pos)   
+                if name == 'right':
+                    self.button_control = button_control         
+                    
+                    # print(f'{self.button_control=}')
                 leader_pos[name] = torch.from_numpy(np.array(controller_command[name]))
                 self.logs["read_controller_{name}_command_dt_s"] = time.perf_counter() - before_controller_read_t
         else:

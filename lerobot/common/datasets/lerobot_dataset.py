@@ -76,7 +76,7 @@ class LeRobotDatasetMetadata:
         self,
         repo_id: str,
         root: str | Path | None = None,
-        local_files_only: bool = False,
+        local_files_only: bool = True,
     ):
         self.repo_id = repo_id
         self.root = Path(root) if root is not None else LEROBOT_HOME / repo_id
@@ -84,7 +84,8 @@ class LeRobotDatasetMetadata:
 
         # Load metadata
         (self.root / "meta").mkdir(exist_ok=True, parents=True)
-        self.pull_from_repo(allow_patterns="meta/")
+        if not local_files_only:
+            self.pull_from_repo(allow_patterns="meta/")
         self.info = load_info(self.root)
         self.stats = load_stats(self.root)
         self.tasks = load_tasks(self.root)
@@ -447,15 +448,17 @@ class LeRobotDataset(torch.utils.data.Dataset):
 
         # Check version
         check_version_compatibility(self.repo_id, self.meta._version, CODEBASE_VERSION)
-
-        # Load actual data
-        self.download_episodes(download_videos)
-        self.hf_dataset = self.load_hf_dataset()
+        
         self.episode_data_index = get_episode_data_index(self.meta.episodes, self.episodes)
-
-        # Check timestamps
-        check_timestamps_sync(self.hf_dataset, self.episode_data_index, self.fps, self.tolerance_s)
-
+        if not self.local_files_only:
+            # Load actual data
+            self.download_episodes(download_videos)
+            self.hf_dataset = self.load_hf_dataset()
+            # Check timestamps
+            check_timestamps_sync(self.hf_dataset, self.episode_data_index, self.fps, self.tolerance_s)
+        else:
+            self.hf_dataset = None
+            
         # Setup delta_indices
         if self.delta_timestamps is not None:
             check_delta_timestamps(self.delta_timestamps, self.fps, self.tolerance_s)

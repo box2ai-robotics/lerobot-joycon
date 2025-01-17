@@ -81,7 +81,7 @@ Note: 建议``使用Vscode打开lerobot-joycon工程目录``，打开readme.md�
 
 # (二) 设备号查询
 
-### 1. 机械臂端口号查询
+<!-- ### 1. 机械臂端口号查询
 
 使用步骤：
   (1) 插上机械臂驱动板，
@@ -95,9 +95,9 @@ python lerobot/scripts/find_motors_bus_port.py
   
   (4) 在输入指令的终端窗口敲击回车，即可检测到拔掉的是哪个端口
   
-  (5) 更新到 ``lerobot/configs/robot/so100.yaml`` 中的 ``port``中，对应好主臂和从臂
+  (5) 更新到 ``lerobot/configs/robot/so100.yaml`` 中的 ``port``中，对应好主臂和从臂 -->
 
-### 2.设备号固定为自定义端口（Box推荐）
+### 1.设备号固定为自定义端口（Box推荐）
 
 写入设备rules，保证每次机械臂顺序插的不一样也可以读取到正确的端口ID，避免左右臂插的顺序错误导致校准文件读取错误，错误运行损坏机械臂。配置步骤如下：
 
@@ -105,7 +105,9 @@ python lerobot/scripts/find_motors_bus_port.py
   
 ```shell
 udevadm info -a -n /dev/ttyACM* | grep serial
+```
 
+```shell
 # 将输出类似ID号：
 #     ATTRS{serial}=="58FA083324"
 #     ATTRS{serial}=="0000:00:14.0"
@@ -139,10 +141,10 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 - lerobot_tty0 == ``左臂`` ==> 校准时会提示校准 ``main follower``
 - lerobot_tty1 == ``右臂`` ==> 校准时会提示校准 ``main leader``
 
-一般会从Follower开始，即右边机械臂开始，然后是左边机械臂
+一般会从Follower开始，即右边机械臂开始，然后是左边机械臂,注意，每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
 
 ```shell
-# 注意，每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
+
 python lerobot/scripts/control_robot.py calibrate \
     --robot-path lerobot/configs/robot/so100.yaml \
     --robot-overrides '~cameras'
@@ -159,14 +161,6 @@ python lerobot/scripts/control_robot.py calibrate \
 |---|---|---|
 | <img src="./media/so100/leader_zero.webp?raw=true" alt="SO-100 leader arm zero position" title="SO-100 leader arm zero position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rotated.webp?raw=true" alt="SO-100 leader arm rotated position" title="SO-100 leader arm rotated position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rest.webp?raw=true" alt="SO-100 leader arm rest position" title="SO-100 leader arm rest position" style="max-width: 300px; height: auto;"> | -->
 
-
-!!如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
-
-```shell
-  python -m pip uninstall torch torchvision torchaudio
-  python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
-```
-
 ### 2. 无相机观察的遥操作测试（左臂遥控右臂）
 
 ```shell
@@ -177,6 +171,16 @@ python lerobot/scripts/control_robot.py teleoperate \
 ```
 
 如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
+
+
+
+!!如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
+
+```shell
+  python -m pip uninstall torch torchvision torchaudio
+  python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
+```
+
 
 &nbsp;
 ------------------------------------------------------------------------
@@ -240,9 +244,12 @@ python lerobot/scripts/control_robot.py record \
     --reset-time-s 10 \
     --num-episodes 2 \
     --push-to-hub 0 \
+    --local-files-only 1 \
     --root datasets/so100_test \
     --repo-id task/so100_test \
-    --single-task so100_test
+    --single-task so100_test \
+    --resume 1 
+   
 ```
 
 (1) 重要参数说明：
@@ -369,6 +376,7 @@ python lerobot/scripts/control_robot.py record \
   --episode-time-s 40 \
   --reset-time-s 10 \
   --num-episodes 10 \
+  --local-files-only 1 \
   --repo-id task/eval_so100_test \
   --single-task eval_so100_test \
   -p outputs/train/act_so100_test/checkpoints/last/pretrained_model 
@@ -394,9 +402,12 @@ python lerobot/scripts/control_robot.py record \
     --reset-time-s 10 \
     --num-episodes 你想录多少个数据如:50 \
     --push-to-hub 0 \
+    --local-files-only 1 \
     --root datasets/换成你的任务的名字如:pick \
     --repo-id task/换成你的任务的名字如:pick \
-    --single-task 换成你的任务的名字如:pick
+    --single-task 换成你的任务的名字如:pick \
+    --resume 1
+    
 
 # 2.模型训练
 python lerobot/scripts/train.py \
@@ -419,6 +430,7 @@ python lerobot/scripts/control_robot.py record \
   --episode-time-s 40 \
   --reset-time-s 10 \
   --num-episodes 10 \
+  --local-files-only 1 \
   --repo-id task/eval_换成你的任务的名字如:pick \
   --single-task eval_换成你的任务的名字如:pick \
   -p outputs/train/act_换成你的任务的名字如:pick/checkpoints/last/pretrained_model 
@@ -548,9 +560,11 @@ python lerobot/scripts/control_robot.py record \
     --reset-time-s 10 \
     --num-episodes 你想录多少个数据如:50 \
     --push-to-hub 0 \
+    --local-files-only 1 \
     --root datasets/换成你的任务的名字如:pick \
     --repo-id task/换成你的任务的名字如:pick \
-    --single-task 换成你的任务的名字如:pick
+    --single-task 换成你的任务的名字如:pick \
+    --resume 1
 
 # 2.模型训练
 python lerobot/scripts/train.py \
@@ -589,9 +603,11 @@ python lerobot/scripts/control_robot.py record \
     --warmup-time-s 5 \
     --episode-time-s 120 \
     --reset-time-s 10 \
-    --num-episodes 2 \
+    --num-episodes 50 \
     --push-to-hub 0 \
+    --local-files-only 1 \
     --root datasets/pick \
     --repo-id task/pick \
-    --single-task pick
+    --single-task pick \
+    --resume 1 
 ```

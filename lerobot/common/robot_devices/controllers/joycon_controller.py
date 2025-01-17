@@ -25,6 +25,7 @@ class JoyConController:
         *args,
         **kwargs,
     ):
+        self.name = name
         self.xml_path = "./lerobot/common/robot_devices/controllers/scene.xml"
         self.mjmodel = mujoco.MjModel.from_xml_path(self.xml_path)
         self.qpos_indices = np.array([self.mjmodel.jnt_qposadr[self.mjmodel.joint(n).id] for n in JOINT_NAMES])
@@ -65,14 +66,11 @@ class JoyConController:
         else:
             print("Failed to connect after several attempts.")
         
-        
-        self.next_episode_button = 0
-        self.restart_episode_button = 0
         self.target_gpos_last = self.init_gpos.copy()      
         
     def get_command(self, present_pose):
         
-        target_pose, gripper_state_r = self.joyconrobotics.get_control()
+        target_pose, gripper_state, button_control = self.joyconrobotics.get_control()
         # print("target_pose:", [f"{x:.3f}" for x in target_pose])
         
         for i in range(6):
@@ -97,7 +95,7 @@ class JoyConController:
         
         joint_angles = self.target_qpos
         if IK_success:
-            self.target_qpos = np.concatenate(([yaw,], qpos_inv_mujoco[:4], [gripper_state_r,])) 
+            self.target_qpos = np.concatenate(([yaw,], qpos_inv_mujoco[:4], [gripper_state,])) 
 
             self.mjdata.qpos[self.qpos_indices] = self.target_qpos
             mujoco.mj_step(self.mjmodel, self.mjdata)
@@ -113,17 +111,19 @@ class JoyConController:
             self.joyconrobotics.set_position = self.target_gpos[0:3]
         
         
-        self.next_episode_button = self.joyconrobotics.listen_button('a')
-        self.restart_episode_button = self.joyconrobotics.listen_button('y')
+        # self.next_episode_button = self.joyconrobotics.listen_button('a')
+        # self.restart_episode_button = self.joyconrobotics.listen_button('y')
         
-        if self.next_episode_button == 1:
-            self.button_control = 1
-        elif self.restart_episode_button == 1:
-            self.button_control = -1
-        else:
-            self.button_control = 0
+        # if self.next_episode_button == 1:
+        #     self.button_control = 1
+        # elif self.restart_episode_button == 1:
+        #     self.button_control = -1
+        # else:
+        #     self.button_control = 0
+        if self.name == 'right':
+            print(f'############################{button_control=}')
             
-        return joint_angles, self.button_control
+        return joint_angles, button_control
         
         
         #TODO:增加按键控制数据集

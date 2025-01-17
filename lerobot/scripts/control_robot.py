@@ -98,6 +98,8 @@ import logging
 import time
 from pathlib import Path
 from typing import List
+import os
+import shutil
 
 # from safetensors.torch import load_file, save_file
 from lerobot.common.datasets.lerobot_dataset import LeRobotDataset
@@ -206,7 +208,7 @@ def record(
     play_sounds: bool = True,
     resume: bool = False,
     # TODO(rcadene, aliberts): remove local_files_only when refactor with dataset as argument
-    local_files_only: bool = False,
+    local_files_only: bool = True,
 ) -> LeRobotDataset:
     # TODO(rcadene): Add option to record logs
     listener = None
@@ -231,8 +233,12 @@ def record(
             logging.warning(
                 f"There is a mismatch between the provided fps ({fps}) and the one from policy config ({policy_fps})."
             )
-
-    if resume:
+    
+    info_file_path = os.path.join(root, "meta", "info.json")
+    task_file_path = os.path.join(root, "meta", "tasks.jsonl")
+    
+    if os.path.exists(info_file_path) and os.path.exists(task_file_path):
+    # if resume:
         dataset = LeRobotDataset(
             repo_id,
             root=root,
@@ -244,6 +250,9 @@ def record(
         )
         sanity_check_dataset_robot_compatibility(dataset, robot, fps, video)
     else:
+        if os.path.exists(root):
+            shutil.rmtree(root)
+            
         # Create empty dataset or load existing saved episodes
         sanity_check_dataset_name(repo_id, policy)
         dataset = LeRobotDataset.create(
@@ -255,7 +264,7 @@ def record(
             image_writer_processes=num_image_writer_processes,
             image_writer_threads=num_image_writer_threads_per_camera * len(robot.cameras),
         )
-
+    
     if not robot.is_connected:
         robot.connect()
 
@@ -304,7 +313,8 @@ def record(
         ):
             log_say("Reset the environment", play_sounds)
             reset_environment(robot, events, reset_time_s)
-
+        
+        
         if events["rerecord_episode"] or robot.button_control == -1:
             log_say("Re-record episode", play_sounds)
             events["rerecord_episode"] = False
@@ -517,6 +527,7 @@ if __name__ == "__main__":
         nargs="*",
         help="Any key=value arguments to override config values (use dots for.nested=overrides)",
     )
+
 
     parser_replay = subparsers.add_parser("replay", parents=[base_parser])
     parser_replay.add_argument(

@@ -288,7 +288,7 @@ def control_loop(
         log_control_info(robot, dt_s, fps=fps)
 
         timestamp = time.perf_counter() - start_episode_t
-        if events["exit_early"]:
+        if events["exit_early"] or robot.button_control != 0:
             events["exit_early"] = False
             break
 
