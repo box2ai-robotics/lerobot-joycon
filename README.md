@@ -15,7 +15,13 @@ This repository is a fork of the following projects,:
 
 ## (〇) 声明
 
-这是一个LeRobot的中国社区分支，用于的方便的**本地化采集和部署**（出于某些原因），并为 Joycon 添加了便携式遥操作以及正负运动学控制。
+这是一个LeRobot的中国社区分支，主要涉及有以下修改：
+
+1. 本地USB端口根据驱动板serial序列固定端口号映射udev的配置方法，无需每次插线都检查USBttyACM，生怕校准文件错乱😨。
+2. 免除网络问题造成的采集，训练，推理卡死或者登录失败的情况，相关步骤配置修改的步骤也列出了🏫。
+3. 优化了数据集目录检测机制，自动检测数据集是否存在，如果存在不会报错，而是接续录制⏺。
+4. 常见问题解决，欢迎将发现的问题提出，会立即补充更新❌。
+5. 适配joycon遥操做控制数据采集🎮。
 
 &nbsp;
 
@@ -241,8 +247,8 @@ python lerobot/scripts/control_robot.py record \
     --tags so100 tutorial \
     --warmup-time-s 5 \
     --episode-time-s 40 \
-    --reset-time-s 10 \
-    --num-episodes 2 \
+    --reset-time-s 5 \
+    --num-episodes 10 \
     --push-to-hub 0 \
     --local-files-only 1 \
     --root datasets/so100_test \
@@ -263,6 +269,7 @@ python lerobot/scripts/control_robot.py record \
   - 脚本启动轮动帧数，即开始录制
   - ``键盘右箭头 ^``：完成当前任务，保存，并准备下一次任务数据集录制
   - ``键盘上箭头 >``：等待10秒后重新录制当前剧集(episode)
+  - ``键盘ESC键``: 结束录制，如果不正常Ctrl+C结束，可能会缺少数据（mean and std）
 
 ！！如果，运行之后终端卡死，从臂不跟着主臂一起动，则是因为cv没办法可视化(display)的原因
 ```shell
@@ -374,7 +381,7 @@ python lerobot/scripts/control_robot.py record \
   --tags so100 tutorial eval \
   --warmup-time-s 5 \
   --episode-time-s 40 \
-  --reset-time-s 10 \
+  --reset-time-s 5 \
   --num-episodes 10 \
   --local-files-only 1 \
   --repo-id task/eval_so100_test \
@@ -399,7 +406,7 @@ python lerobot/scripts/control_robot.py record \
     --tags so100 tutorial \
     --warmup-time-s 5 \
     --episode-time-s 40 \
-    --reset-time-s 10 \
+    --reset-time-s 你想才采集间隔等待多少秒如:5 \
     --num-episodes 你想录多少个数据如:50 \
     --push-to-hub 0 \
     --local-files-only 1 \
@@ -428,7 +435,7 @@ python lerobot/scripts/control_robot.py record \
   --tags so100 tutorial eval \
   --warmup-time-s 5 \
   --episode-time-s 40 \
-  --reset-time-s 10 \
+  --reset-time-s 5 \
   --num-episodes 10 \
   --local-files-only 1 \
   --repo-id task/eval_换成你的任务的名字如:pick \
@@ -536,7 +543,7 @@ python lerobot/scripts/control_robot.py teleoperate \
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
-    --robot-path lerobot/configs/robot/so100_joycon.yaml 
+    --robot-path lerobot/configs/robot/so100_joycon_double.yaml 
 ```
 
 如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
@@ -545,9 +552,84 @@ python lerobot/scripts/control_robot.py teleoperate \
 
 注意是修改了其中的``so100.yaml``：
 - ``so100_joycon_single.yaml``：即可使用右边手柄操控右边手臂
-- ``so100_joycon.yaml``：即可使用右边手柄操控双臂采集
+- ``so100_joycon_double.yaml``：即可使用右边手柄操控双臂采集
 
 剩下的操作和上述遥操操作一致，祝您玩得愉快
+
+单臂示例：
+
+```shell
+# 1.0 数据采集
+python lerobot/scripts/control_robot.py record \
+    --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
+    --fps 30 \
+    --tags so100 tutorial \
+    --warmup-time-s 5 \
+    --episode-time-s 40 \
+    --reset-time-s 5 \
+    --num-episodes 20 \
+    --push-to-hub 0 \
+    --local-files-only 1 \
+    --root datasets/pick_put \
+    --repo-id task/pick \
+    --single-task pick_put \
+    --resume 1 
+    
+# 1.1 可视化数据集
+python lerobot/scripts/visualize_dataset.py \
+    --root datasets/pick_put \
+    --local-files-only 1 \
+    --mode 0 \
+    --repo-id task/pick_put \
+    --episode-index 0 \
+    --save 1 \
+    --output-dir datasets/pick_put/visualize
+    
+# 1.2 播放数据集
+rerun datasets/pick_put/visualize/task_pick_put_episode_0.rrd
+
+# 1.3 轨迹复现
+DATA_DIR=data python lerobot/scripts/control_robot.py replay \
+    --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
+    --fps 30 \
+    --root datasets/pick_put \
+    --repo-id task/pick_put \
+    --episode 0 \
+    --local-files-only 1
+
+
+# 2.0模型训练
+python lerobot/scripts/train.py \
+  policy=act_so100_real \
+  env=so100_real \
+  device=cuda \
+  wandb.enable=false \
+  local_only.enable=true \
+  dataset_repo_id=task/pick_put \
+  hydra.run.dir=outputs/train/act_pick_put \
+  hydra.job.name=act_pick_put \
+  local_only.path=datasets/pick_put 
+
+# 3. 模型推理
+python lerobot/scripts/control_robot.py record \
+  --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
+  --fps 30 \
+  --tags so100 tutorial eval \
+  --warmup-time-s 5 \
+  --episode-time-s 40 \
+  --reset-time-s 5 \
+  --num-episodes 10 \
+  --push-to-hub 0 \
+  --local-files-only 1 \
+  --root datasets/eval_pick_put \
+  --repo-id task/eval_pick_put \
+  --single-task eval_pick_put \
+  -p outputs/train/act_pick_put/checkpoints/last/pretrained_model 
+  
+```
+
+
+
 
 ```shell
 # 1.数据录制
@@ -557,7 +639,7 @@ python lerobot/scripts/control_robot.py record \
     --tags so100 tutorial \
     --warmup-time-s 5 \
     --episode-time-s 40 \
-    --reset-time-s 10 \
+    --reset-time-s 5 \
     --num-episodes 你想录多少个数据如:50 \
     --push-to-hub 0 \
     --local-files-only 1 \
@@ -585,29 +667,10 @@ python lerobot/scripts/control_robot.py record \
   --tags so100 tutorial eval \
   --warmup-time-s 5 \
   --episode-time-s 40 \
-  --reset-time-s 10 \
+  --reset-time-s 5 \
   --num-episodes 10 \
   --repo-id task/eval_换成你的任务的名字如:pick \
   --single-task eval_换成你的任务的名字如:pick \
   -p outputs/train/act_换成你的任务的名字如:pick/checkpoints/last/pretrained_model 
   
-```
-
-NOTE: 如果已经采集过的数据集，需要重新采集的话，需要删掉[datasets](datasets)目录下的数据集文件夹。
-
-```shell
-python lerobot/scripts/control_robot.py record \
-    --robot-path lerobot/configs/robot/so100_joycon.yaml \
-    --fps 30 \
-    --tags so100 tutorial \
-    --warmup-time-s 5 \
-    --episode-time-s 120 \
-    --reset-time-s 10 \
-    --num-episodes 50 \
-    --push-to-hub 0 \
-    --local-files-only 1 \
-    --root datasets/pick \
-    --repo-id task/pick \
-    --single-task pick \
-    --resume 1 
 ```

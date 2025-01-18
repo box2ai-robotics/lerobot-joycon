@@ -457,7 +457,7 @@ class LeRobotDataset(torch.utils.data.Dataset):
             # Check timestamps
             check_timestamps_sync(self.hf_dataset, self.episode_data_index, self.fps, self.tolerance_s)
         else:
-            self.hf_dataset = None
+            self.hf_dataset = self.load_hf_dataset()
             
         # Setup delta_indices
         if self.delta_timestamps is not None:

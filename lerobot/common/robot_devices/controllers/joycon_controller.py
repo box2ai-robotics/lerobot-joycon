@@ -53,7 +53,7 @@ class JoyConController:
                     close_y=True, 
                     limit_dof=True, 
                     init_gpos=self.init_gpos, 
-                    # dof_speed=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5], 
+                    dof_speed=[1.0, 1.0, 1.0, 1.0, 1.0, 0.5], 
                     common_rad=False,
                     lerobot=True
                 )
@@ -88,6 +88,12 @@ class JoyConController:
         pitch = -pitch 
         roll = roll - math.pi/2 # lerobo末端旋转90度
         
+        # 双臂朝中间偏
+        if self.name == 'left':
+            yaw = yaw - 0.4
+        elif self.name == 'right':
+            yaw = yaw + 0.4
+        
         right_target_gpos = np.array([x, y, z, roll, pitch, 0.0])
         fd_qpos_mucojo = self.mjdata.qpos[self.qpos_indices][1:5]
         
@@ -110,18 +116,8 @@ class JoyConController:
             self.target_gpos = self.target_gpos_last.copy()
             self.joyconrobotics.set_position = self.target_gpos[0:3]
         
-        
-        # self.next_episode_button = self.joyconrobotics.listen_button('a')
-        # self.restart_episode_button = self.joyconrobotics.listen_button('y')
-        
-        # if self.next_episode_button == 1:
-        #     self.button_control = 1
-        # elif self.restart_episode_button == 1:
-        #     self.button_control = -1
-        # else:
-        #     self.button_control = 0
-        if self.name == 'right':
-            print(f'############################{button_control=}')
+        # if button_control != 0:
+        #     self.joyconrobotics.reset_joycon()
             
         return joint_angles, button_control
         

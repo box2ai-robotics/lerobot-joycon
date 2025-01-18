@@ -114,9 +114,11 @@ def visualize_dataset(
         assert (
             output_dir is not None
         ), "Set an output directory where to write .rrd files with `--output-dir path/to/directory`."
-
+    
+    mode = 'local'
+    
     repo_id = dataset.repo_id
-
+    
     logging.info("Loading dataloader")
     episode_sampler = EpisodeSampler(dataset, episode_index)
     dataloader = torch.utils.data.DataLoader(
