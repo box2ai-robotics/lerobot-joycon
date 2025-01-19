@@ -142,7 +142,7 @@ udevadm info -a -n /dev/ttyACM* | grep serial
 
 ```shell
 sudo cp lerobot/configs/robot/rules/99-lerobot-serial.rules /etc/udev/rules.d/
-sudo chmod +x /etc/udev/rules.d/arx_can.rules
+sudo chmod +x /etc/udev/rules.d/99-lerobot-serial.rules
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
   (6) 更新到 ``lerobot/configs/robot/so100.yaml`` 中的，主臂的port改成``/dev/lerobot_tty0``，从臂改成``/dev/lerobot_tty1``.（这是在99-lerobot-serial.rules中设置的）
@@ -611,7 +611,7 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
 
 # 2.0模型训练
 python lerobot/scripts/train.py \
-  policy=act_so100_real \
+  policy=act_so100_real_single \
   env=so100_real \
   device=cuda \
   wandb.enable=false \
