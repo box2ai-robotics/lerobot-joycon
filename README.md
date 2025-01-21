@@ -616,7 +616,7 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
 # 2.0模型训练
 python lerobot/scripts/train.py \
   policy=act_so100_real_single \
-  env=so100_real \
+  env=so100_real_single \
   device=cuda \
   wandb.enable=false \
   local_only.enable=true \
@@ -644,7 +644,79 @@ python lerobot/scripts/control_robot.py record \
 ```
 
 
+双臂示例
 
+```shell
+# 1.0 数据采集
+python lerobot/scripts/control_robot.py record \
+    --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
+    --fps 30 \
+    --tags so100 tutorial \
+    --warmup-time-s 5 \
+    --episode-time-s 40 \
+    --reset-time-s 5 \
+    --num-episodes 20 \
+    --push-to-hub 0 \
+    --local-files-only 1 \
+    --root datasets/pick_put_double \
+    --repo-id task/pick \
+    --single-task pick_put_double \
+    --resume 1 
+    
+# 1.1 可视化数据集
+python lerobot/scripts/visualize_dataset.py \
+    --root datasets/pick_put_double \
+    --local-files-only 1 \
+    --mode 0 \
+    --repo-id task/pick_put_double \
+    --episode-index 0 \
+    --save 1 \
+    --output-dir datasets/pick_put_double/visualize
+    
+# 1.2 播放数据集
+rerun datasets/pick_put_double/visualize/task_pick_put_double_episode_0.rrd
+
+# 1.3 轨迹复现
+DATA_DIR=data python lerobot/scripts/control_robot.py replay \
+    --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
+    --fps 30 \
+    --root datasets/pick_put_double \
+    --repo-id task/pick_put_double \
+    --episode 0 \
+    --local-files-only 1
+
+
+# 2.0模型训练
+python lerobot/scripts/train.py \
+  policy=act_so100_real_double \
+  env=so100_real_double \
+  device=cuda \
+  wandb.enable=false \
+  local_only.enable=true \
+  dataset_repo_id=task/pick_put_double \
+  hydra.run.dir=outputs/train/act_pick_put_double \
+  hydra.job.name=act_pick_put_double \
+  local_only.path=datasets/pick_put_double 
+
+# 3. 模型推理
+python lerobot/scripts/control_robot.py record \
+  --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
+  --fps 30 \
+  --tags so100 tutorial eval \
+  --warmup-time-s 5 \
+  --episode-time-s 40 \
+  --reset-time-s 5 \
+  --num-episodes 10 \
+  --push-to-hub 0 \
+  --local-files-only 1 \
+  --root datasets/eval_pick_put_double \
+  --repo-id task/eval_pick_put_double \
+  --single-task eval_pick_put_double \
+  -p outputs/train/act_pick_put_double/checkpoints/last/pretrained_model 
+  
+```
+
+自定义
 
 ```shell
 # 1.数据录制
@@ -665,7 +737,7 @@ python lerobot/scripts/control_robot.py record \
 
 # 2.模型训练
 python lerobot/scripts/train.py \
-  policy=act_so100_real \
+  policy=act_so100_real_double \
   env=so100_real \
   device=cuda \
   wandb.enable=false \

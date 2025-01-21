@@ -8,7 +8,7 @@ import os
 from joyconrobotics import JoyconRobotics
 import numpy as np
 
-from lerobot_kinematics import lerobot_IK, lerobot_FK, get_robot2, feetech_arm
+from lerobot_kinematics import lerobot_IK, lerobot_FK, get_robot
 from joyconrobotics import JoyconRobotics
 import mujoco
 
@@ -31,7 +31,7 @@ class JoyConController:
         self.qpos_indices = np.array([self.mjmodel.jnt_qposadr[self.mjmodel.joint(n).id] for n in JOINT_NAMES])
         self.mjdata = mujoco.MjData(self.mjmodel)
         
-        self.robot = get_robot2()
+        self.robot = get_robot('so100')
         self.glimit = [[0.125, -0.4,  0.046, -3.1, -1.5, -1.5], 
                        [0.380,  0.4,  0.23,  3.1,  1.5,  1.5]]
         
@@ -53,9 +53,11 @@ class JoyConController:
                     close_y=True, 
                     limit_dof=True, 
                     init_gpos=self.init_gpos, 
+                    glimit=self.glimit,
                     dof_speed=[1.0, 1.0, 1.0, 1.0, 1.0, 0.5], 
                     common_rad=False,
-                    lerobot=True
+                    lerobot=True,
+                    pitch_down_double=True
                 )
                 break  # 连接成功，跳出循环
             except Exception as e:
@@ -120,6 +122,3 @@ class JoyConController:
         #     self.joyconrobotics.reset_joycon()
             
         return joint_angles, button_control
-        
-        
-        #TODO:增加按键控制数据集
