@@ -48,11 +48,11 @@ This repository is a fork of the following projects,:
   1. Ubuntu 20.04
   2. 可连接蓝牙设备
   
-### 1. 安装Miniforge或者MiniConda
+### 1. 安装micromamba或者MiniConda
   
 ```shell
-# 安装Miniforge
-wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" --no-check-certificate
+# 安装micromamba
+"${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 
 # 或者安装MiniConda
 # mkdir -p ~/miniconda3
