@@ -166,3 +166,6 @@ cython_debug/
 datasets/**
 
 框架图.pptx
+.cache/calibration/left_follower.json
+.cache/calibration/right_follower.json
+.cache/calibration/so100/main_follower_plus.json

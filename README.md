@@ -540,7 +540,7 @@ pip install -e .
 
 ``main_leader.json`` 拷贝重命名为 ``left_follower.json``
 
-可以执行下面的指令快速地重命名：
+可以执行下面的指令快速地重命名（在"."开头隐藏文件夹中，需要按"ctrl+H"开启显示）：
 
 ```shell
 cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json

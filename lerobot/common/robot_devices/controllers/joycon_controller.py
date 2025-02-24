@@ -45,6 +45,7 @@ class JoyConController:
         
         self.max_retries = timeout
         self.retries = 0
+        self.offset_position_m = self.init_gpos[0:3]
         while self.retries < self.max_retries:
             try:
                 self.joyconrobotics = JoyconRobotics(
@@ -52,7 +53,7 @@ class JoyConController:
                     horizontal_stick_mode='yaw_diff', 
                     close_y=True, 
                     limit_dof=True, 
-                    init_gpos=self.init_gpos, 
+                    offset_position_m=self.offset_position_m, 
                     glimit=self.glimit,
                     dof_speed=[1.0, 1.0, 1.0, 1.0, 1.0, 0.5], 
                     common_rad=False,
