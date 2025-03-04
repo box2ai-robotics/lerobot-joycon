@@ -79,6 +79,7 @@ conda install -y -c conda-forge "opencv>=4.10.0"
 
 # 配置库文件链接
 echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ！！ 如果你遇到报错，请检查是否报错中存在 ``network`` ， ``timeout``等网络问题，请检查pip是否更换为国内镜像源，具体参考[pip清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/)，[Ubuntu清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/)
@@ -166,7 +167,6 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 一般会从Follower开始，即右边机械臂开始，然后是左边机械臂,注意，每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
 
 ```shell
-
 python lerobot/scripts/control_robot.py calibrate \
     --robot-path lerobot/configs/robot/so100.yaml \
     --robot-overrides '~cameras'
@@ -561,7 +561,11 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_double.yaml 
 ```
 
-如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
+如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令： 
+ 
+```shell
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
+```
 
 ### 3. 手柄遥操数据集采集
 
