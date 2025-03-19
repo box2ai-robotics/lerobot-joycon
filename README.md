@@ -68,7 +68,7 @@ This repository is a fork of the following projects,:
 ```shell
 conda create -y -n lerobot python=3.10
 conda activate lerobot
-cd lerobot
+# cd lerobot-joycon
 pip install -e .
 
 # 使用飞特舵机的版本
