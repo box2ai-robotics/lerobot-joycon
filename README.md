@@ -493,6 +493,22 @@ Diffusion Policy通常被认为比ALoha-ACT的模型更聪明更具有泛化性�
 
 - [crop_shape](lerobot/configs/policy/diffusion.yaml:79)：增大随机裁剪尺寸，输入图像尺寸为640x480，建议修改为[440， 560]，保留更大的视野，可以更快的收敛一些，但泛化性会相对下降
 
+Diffusion Policy的Transformer版本相对于CNN-Unet版本效果更好，但对超参数比较敏感，下面是使用diffusion_transformer在aloha数据集上的训练代码,如果使用Unet，将use_transformer设置为false:
+```shell
+python lerobot/scripts/train.py \
+  policy=diffusion_aloha \
+  policy.use_transformer=true \
+  env=aloha \
+  env.task=AlohaTransferCube-v0 \
+  device=cuda \
+  wandb.enable=false \
+  local_only.enable=false \
+  hydra.run.dir=outputs/train/diffusion_transformer_sim_transfer \
+  hydra.job.name=换成你的任务的名字如:pick \
+  local_only.path=None
+
+```
+
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
 &nbsp;
