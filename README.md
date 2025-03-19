@@ -135,7 +135,7 @@ udevadm info -a -n /dev/ttyACM* | grep serial
 #     ATTRS{serial}=="58FA083324"
 #     ATTRS{serial}=="0000:00:14.0"
 ```
-(2) 将输出的上面的编码值输入到99-lerobot-serial.rules的第1行ATTRS{serial}中代表着lerobot_tty0左臂或者主臂
+(2) 将输出的上面的编码值输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第1行ATTRS{serial}中代表着lerobot_tty0左臂或者主臂
 (3) 拔掉刚才的机械臂，插上另一个机械臂（期望是右边的，或者是从臂），查看ID
 
 
@@ -164,7 +164,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 - lerobot_tty0 == ``左臂`` ==> 校准时会提示校准 ``main follower``
 - lerobot_tty1 == ``右臂`` ==> 校准时会提示校准 ``main leader``
 
-一般会从Follower开始，即右边机械臂开始，然后是左边机械臂,注意，每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
+一般会从Follower开始，即``右边机械臂开始``，然后是左边机械臂,注意每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
 
 ```shell
 python lerobot/scripts/control_robot.py calibrate \
@@ -172,8 +172,10 @@ python lerobot/scripts/control_robot.py calibrate \
     --robot-overrides '~cameras'
 ```
 
-**注意``2 Rortated position``，整个机械臂姿态方向一定要观察清楚。**
+**注意``2 Rortated position``，整个机械臂姿态方向一定要观察清楚，并且转动每个关节的时候不要太快，容易烧坏电机。**
 
+如果报错``ValueError: No integer found between bounds [low_factor=-0.00146484375, upp_factor=-0.00146484375]``,则说明校准的时候主从比刚好反了，请重新运行上面的指令重新校准，从右边的机械臂开始。
+如果报错``ConnectionError: Read failed due to communication error on port /dev/lerobot_tty1 for group_key Torque_Enable_shoulder_pan_shoulder_lift_elbow_flex_wrist_flex_wrist_roll_gripper: [TxRxResult] There is no status packet!``，请重新插拔电源和USB线，如果还不行，可能是舵机线松了，请检查一下每一个电机的接线头
 
 | 1. Follower Zero position | 2. Follower Rotated position | 3. Follower Rest position |
 |---|---|---|
@@ -551,14 +553,17 @@ cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/left_follo
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
-    --robot-path lerobot/configs/robot/so100_joycon_single.yaml 
+    --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
+    --robot-overrides '~cameras' 
 ```
 
 (3) 双臂使用遥控器遥操作:
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
-    --robot-path lerobot/configs/robot/so100_joycon_double.yaml 
+    --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
+    --robot-overrides '~cameras' 
+    
 ```
 
 如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令： 
