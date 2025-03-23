@@ -69,7 +69,8 @@ class JoyConController:
         else:
             print("Failed to connect after several attempts.")
         
-        self.target_gpos_last = self.init_gpos.copy()      
+        self.target_gpos_last = self.init_gpos.copy() 
+        self.joint_angles_last = self.init_qpos.copy() 
         
     def get_command(self, present_pose):
         
@@ -92,32 +93,34 @@ class JoyConController:
         roll = roll - math.pi/2 # lerobo末端旋转90度
         
         # 双臂朝中间偏
-        if self.name == 'left':
-            yaw = yaw - 0.4
-        elif self.name == 'right':
-            yaw = yaw + 0.4
+        # if self.name == 'left':
+        #     yaw = yaw - 0.4
+        # elif self.name == 'right':
+        #     yaw = yaw + 0.4
         
-        right_target_gpos = np.array([x, y, z, roll, pitch, 0.0])
+        target_gpos = np.array([x, y, z, roll, pitch, 0.0])
         fd_qpos_mucojo = self.mjdata.qpos[self.qpos_indices][1:5]
         
-        qpos_inv_mujoco, IK_success = lerobot_IK(fd_qpos_mucojo, right_target_gpos, robot=self.robot)
-        
-        joint_angles = self.target_qpos
+        qpos_inv_mujoco, IK_success = lerobot_IK(fd_qpos_mucojo, target_gpos, robot=self.robot)
         if IK_success:
             self.target_qpos = np.concatenate(([yaw,], qpos_inv_mujoco[:4], [gripper_state,])) 
 
             self.mjdata.qpos[self.qpos_indices] = self.target_qpos
             mujoco.mj_step(self.mjmodel, self.mjdata)
-            self.target_gpos_last = right_target_gpos.copy() 
+            
+            self.target_gpos_last = target_gpos.copy() 
+            joint_angles = self.target_qpos
             
             joint_angles = np.rad2deg(self.target_qpos)
             joint_angles[1] = -joint_angles[1]
             joint_angles[0] = -joint_angles[0]
             joint_angles[4] = -joint_angles[4]
+            self.joint_angles_last = joint_angles.copy() 
 
         else:
             self.target_gpos = self.target_gpos_last.copy()
             self.joyconrobotics.set_position = self.target_gpos[0:3]
+            joint_angles = self.joint_angles_last
         
         # if button_control != 0:
         #     self.joyconrobotics.reset_joycon()

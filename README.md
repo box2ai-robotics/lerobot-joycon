@@ -80,6 +80,14 @@ conda install -y -c conda-forge "opencv>=4.10.0"
 # 配置库文件链接
 echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib' >> ~/.bashrc
 source ~/.bashrc
+conda activate lerobot
+
+# 环境配置技巧
+pip uninstall -y numpy pynput
+pip install numpy==1.24.4 pynput==1.7.7
+python -m pip uninstall -y torch torchvision torchaudio 
+python -m pip install -pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
+
 ```
 
 ！！ 如果你遇到报错，请检查是否报错中存在 ``network`` ， ``timeout``等网络问题，请检查pip是否更换为国内镜像源，具体参考[pip清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/)，[Ubuntu清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/)
@@ -124,7 +132,7 @@ python lerobot/scripts/find_motors_bus_port.py
 
 写入设备rules，保证每次机械臂顺序插的不一样也可以读取到正确的端口ID，避免左右臂插的顺序错误导致校准文件读取错误，错误运行损坏机械臂。配置步骤如下：
 
-  (1) 插入左边的机械臂（放置到左边自行记忆即可），这里``只能插入一根机械臂``到USB口，输入以下指令：
+  (1) 插入右边的机械臂（放置到右边自行记忆即可），这里``只能插入一根机械臂``到USB口，输入以下指令：
   
 ```shell
 udevadm info -a -n /dev/ttyACM* | grep serial
@@ -135,14 +143,14 @@ udevadm info -a -n /dev/ttyACM* | grep serial
 #     ATTRS{serial}=="58FA083324"
 #     ATTRS{serial}=="0000:00:14.0"
 ```
-(2) 将输出的上面的编码值输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第1行ATTRS{serial}中代表着lerobot_tty0左臂或者主臂
+(2) 将输出的上面的编码值输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第1行ATTRS{serial}中代表着lerobot_tty0右臂或者主臂
 (3) 拔掉刚才的机械臂，插上另一个机械臂（期望是右边的，或者是从臂），查看ID
 
 
 ```shell
-udevadm info -a -n /dev/ttyACM* | grep serial
+udevadm info -a -n /dev/ttyACM* | grep serial # 如果只有一支臂，只需要改第一行
 ```
-  (4) 将输出的ID输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第2行ATTRS{serial}中代表着lerobot_tty1右臂或者从臂
+  (4) 将输出的ID输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第2行ATTRS{serial}中代表着lerobot_tty1左臂或者从臂
   (5) 将规则文件写入Ubuntu系统目录
 
 ```shell
@@ -161,20 +169,27 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 ### 1. 校准指令
 
 这里``请插入两根机械臂``，如果按照上述顺序配置，对应关系如下，摆到对应位置之后，再命令终端``敲击回车``，进入下一个姿态矫正，各个姿态如下图所示。
-- lerobot_tty0 == ``左臂`` ==> 校准时会提示校准 ``main follower``
-- lerobot_tty1 == ``右臂`` ==> 校准时会提示校准 ``main leader``
+- ``左臂`` ==> 校准时会提示校准 ``main follower`` == lerobot_tty1
+- ``右臂`` ==> 校准时会提示校准 ``main leader`` == lerobot_tty0
 
-一般会从Follower开始，即``右边机械臂开始``，然后是左边机械臂,注意每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
+一般会从Follower开始，即``左边机械臂开始``，然后是右边机械臂,注意每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
 
 ```shell
+# 如果是双臂校准
 python lerobot/scripts/control_robot.py calibrate \
     --robot-path lerobot/configs/robot/so100.yaml \
+    --robot-overrides '~cameras'
+    
+# 如果是单臂校准
+python lerobot/scripts/control_robot.py calibrate \
+    --robot-path lerobot/configs/robot/so100_single.yaml \
     --robot-overrides '~cameras'
 ```
 
 **注意``2 Rortated position``，整个机械臂姿态方向一定要观察清楚，并且转动每个关节的时候不要太快，容易烧坏电机。**
 
 如果报错``ValueError: No integer found between bounds [low_factor=-0.00146484375, upp_factor=-0.00146484375]``,则说明校准的时候主从比刚好反了，请重新运行上面的指令重新校准，从右边的机械臂开始。
+
 如果报错``ConnectionError: Read failed due to communication error on port /dev/lerobot_tty1 for group_key Torque_Enable_shoulder_pan_shoulder_lift_elbow_flex_wrist_flex_wrist_roll_gripper: [TxRxResult] There is no status packet!``，请重新插拔电源和USB线，如果还不行，可能是舵机线松了，请检查一下每一个电机的接线头
 
 | 1. Follower Zero position | 2. Follower Rotated position | 3. Follower Rest position |
@@ -185,7 +200,7 @@ python lerobot/scripts/control_robot.py calibrate \
 |---|---|---|
 | <img src="./media/so100/leader_zero.webp?raw=true" alt="SO-100 leader arm zero position" title="SO-100 leader arm zero position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rotated.webp?raw=true" alt="SO-100 leader arm rotated position" title="SO-100 leader arm rotated position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rest.webp?raw=true" alt="SO-100 leader arm rest position" title="SO-100 leader arm rest position" style="max-width: 300px; height: auto;"> | -->
 
-### 2. 无相机观察的遥操作测试（左臂遥控右臂）
+### 2. 无相机观察的遥操作测试（右臂遥控左臂）
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
@@ -193,23 +208,21 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-overrides '~cameras' \
     --display-cameras 0
 ```
-
+<!-- 
 如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
 
-
-
-!!如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
+!!如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，或者ImportError: /home/boxjod/miniforge3/envs/lerobot_plus/lib/python3.10/site-packages/cv2/python-3.10/../../../.././libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0，是因为torch版本的问题，请执行以下指令：
 
 ```shell
   python -m pip uninstall torch torchvision torchaudio
   python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
-```
+``` -->
 
 
 &nbsp;
 ------------------------------------------------------------------------
 &nbsp;
-# (四) 记录数据集
+# (四) 记录数据集[【如果只有一只机械臂和手柄直接看（七）】](./README.md#L530)
 
 ### 1. 查看相机
 
@@ -223,7 +236,7 @@ python lerobot/common/robot_devices/cameras/opencv.py
 
 其中0是笔记本电脑的自带摄像头
 
-### 2. 配置相机参数
+<!-- ### 2. 配置相机参数
 
 进入``lerobot/configs/robot/so100.yaml``中修改``camera``信息，如果没有使用到手机则注释掉
 ```yaml
@@ -235,12 +248,12 @@ python lerobot/common/robot_devices/cameras/opencv.py
   #   height: 480
 ```
 
-如果使用Box-Arm-V1 Camera 50Hz相机，则需要对应camera_index改为2，需要到 ``lerobot/common/robot_devices/cameras/opencv.py`` 的339行加入，如下代码选择相机的视频格式：上面的代码是：“self.camera = cv2.VideoCapture(camera_idx)”
+如果使用Box-Arm-V1 Camera 60Hz相机，则需要对应camera_index改为2，需要到 ``lerobot/common/robot_devices/cameras/opencv.py`` 的339行加入，如下代码选择相机的视频格式：上面的代码是：“self.camera = cv2.VideoCapture(camera_idx)”
 
 ```python
         self.camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
         self.camera.set(cv2.CAP_PROP_FPS, 60)
-```
+``` -->
 
 ### 3. 进行带相机图像的可视化遥操
 
@@ -249,12 +262,12 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100.yaml 
 ```
 
-!! 如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
+<!-- !! 如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
 ```shell
   python -m pip uninstall torch torchvision torchaudio
   python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
 ```
-如果在lerobot工作空间安装了genesis会影响到torch版本，这个时候就要重新安装一下torch
+如果在lerobot工作空间安装了genesis会影响到torch版本，这个时候就要重新安装一下torch -->
 
 ### 4. 录制数据集
 
@@ -592,7 +605,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
 
 注意是修改了其中的``so100.yaml``：
 - ``so100_joycon_single.yaml``：即可使用右边手柄操控右边手臂
-- ``so100_joycon_double.yaml``：即可使用右边手柄操控双臂采集
+- ``so100_joycon_double.yaml``：即可使用左右边手柄操控双臂采集
 
 剩下的操作和上述遥操操作一致，祝您玩得愉快
 
