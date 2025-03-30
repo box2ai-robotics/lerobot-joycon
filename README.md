@@ -367,7 +367,6 @@ local_only:
 
 ### 2. 开始本地训练
 
-
 ```shell
 python lerobot/scripts/train.py \
   policy=act_so100_real \
@@ -573,6 +572,7 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
     --robot-overrides '~cameras' 
 ```
+如果你遇到报错与“Base_Motor.stl”相关，请将[lerobot-kinematics/example](https://github.com/box2ai-robotics/lerobot-kinematics/tree/main/examples)中的``assets``和``meshes``文件夹都复制替换到``lerobot/common/robot_devices/controllers``下面。
 
 如果你在ubuntu22.04系统中，遇到报错："GLFWError: (65543) b'GLX: Failed to create context: BadValue (integer paraneter out of range for operation)'warnings.warn(nessage,GLFWError) the Mu ERROR: could not create window"运行下面的指令。
 
