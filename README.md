@@ -540,15 +540,15 @@ pip install mujoco==3.2.5
  (1) 首次连接：长按3秒遥控器侧边小圆按钮进行蓝牙配对，在电脑中的蓝牙设备搜索中将出现“Joy-Con(R)”或者“Joy-Con(R)”点击匹配连接。
  
  (2) 连接成功之后，手柄将按照一定频率**震动**。如果单手柄运行，则同时按住两个扳机按钮3秒，如果是双手柄同时使用，则两只手柄都开始震动之后，同时按下左手柄的上扳机键（L）和有手柄的上扳机键（R）。此后，系统将分配固定的进程进行单手柄或双手柄的连接守护。
- | 1. 手柄配对 | 2. 手柄绑定 | 
-|---|---|
-| <img src="media/bocon/bocon_pair.png" alt="SO-100 follower arm zero position" title="SO-100 follower arm zero position" style="max-width: 600px; height: auto;"> | <img src="media/bocon/bocon_connection.png" alt="SO-100 follower arm rotated position" title="SO-100 follower arm rotated position" style="max-width: 600px; height: auto;"> 
+
+<img src="media/bocon/bocon_pair.png" alt="SO-100 follower arm zero position" title="bocon pair button" style="max-width: 300px; height: auto;"> 
+<img src="media/bocon/bocon_connection.png" alt="bocon binding operation" title="SO-100 follower arm rotated position" style="max-width: 1000px; height: auto;"> 
  
  (3) 若已连接配对成功之后，下一次连接相同的电脑只需要按下上扳机键，即可自动搜索快速匹配，5秒内机会出现一定频率的“确定震动”，按照上一步的操作即可连接成功。
  
 ### 2. 手柄遥操
 
- (1) 重命名矫正参数文件
+#### (1) 重命名矫正参数文件
 
 需要将上述机械臂校准的文件重命名一下: 
 
@@ -567,7 +567,7 @@ cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/left_fol
 cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json
 ```
 
-(2) 单臂使用遥控器遥操作:
+#### (2) 单臂使用遥控器遥操作:
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
@@ -575,28 +575,55 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-overrides '~cameras' 
 ```
 
-If you encounter error "GLFWError: (65543) b'GLX: Failed to create context: BadValue (integer paraneter out of range for operation)'
-warnings.warn(nessage,GLFWError) the Mu ERROR: could not create window" and are using ubuntu 21.04, it may be because your computer is using integrated graphics by default and does not support mujoco visualization, please run the following command to switch to discrete graphics.
+如果你在ubuntu22.04系统中，遇到报错："GLFWError: (65543) b'GLX: Failed to create context: BadValue (integer paraneter out of range for operation)'warnings.warn(nessage,GLFWError) the Mu ERROR: could not create window"运行下面的指令。
 
 ```shell
 sudo prime-select nvidia
 sudo reboot
 ```
 
-(3) 双臂使用遥控器遥操作:
+#### (3) 双臂使用遥控器遥操作:
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
     --robot-overrides '~cameras' 
-    
 ```
 
-如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令： 
- 
-```shell
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
-```
+#### (4) 使用教程：
+#### 坐标系说明
+- 初始位置：`(0, 0, 0)`
+- 末端前方朝向：`X+` 方向
+- 右边：`Y+` 方向
+- 上方：`Z+` 方向
+
+#### 摇杆控制（末端第一人称视角）
+- 摇杆向上：朝末端指向的方向前进
+- 摇杆向下：朝末端指向的方向后退
+- 摇杆向左：朝末端指向的横向方向向左平移
+- 摇杆向右：朝末端指向的横向方向向右平移
+
+#### 按键功能
+##### 基础功能
+1. ​**复位**：
+   - 右手 `Home` 键 或 左手 `O`（截图键）：回到初始位置
+<img src="media/bocon/bocon_home.png" alt="SO-100 follower arm zero position" title="SO-100 follower arm zero position" style="max-width: 600px; height: auto;">
+2. ​**夹爪控制**：
+   - 右手 `ZR`（下扳机键）或 左手 `ZL`（下扳机键）：切换夹爪开关状态
+     - 开启状态按下 → 关闭夹爪
+     - 关闭状态按下 → 开启夹爪
+
+3. ​**高度控制**：
+   - 摇杆垂直下压（按下按钮）：机械臂末端 `Z轴` 下降
+   - `L`/`R`（上扳机键）：机械臂末端 `Z轴` 上升
+
+4. ​**前后移动**：
+   - 左手上方向键 或 右手 `X` 键：机械臂末端 `X轴` 向前
+   - 左手下方向键 或 右手 `B` 键：机械臂末端 `X轴` 向后
+
+5. ​**录制控制**：
+   - 右手 `A` 键：结束当前数据集录制（需自行实现代码）
+   - 右手 `Y` 键：重新录制当前数据集（操作出错时使用）
 
 ### 3. 手柄遥操数据集采集
 
