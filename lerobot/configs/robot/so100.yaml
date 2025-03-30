@@ -18,7 +18,7 @@ max_relative_target: null
 leader_arms:
   main:
     _target_: lerobot.common.robot_devices.motors.feetech.FeetechMotorsBus
-    port: /dev/lerobot_tty0
+    port: /dev/lerobot_right
     motors:
       # name: (index, model)
       shoulder_pan: [1, "sts3215"]
@@ -27,11 +27,11 @@ leader_arms:
       wrist_flex: [4, "sts3215"]
       wrist_roll: [5, "sts3215"]
       gripper: [6, "sts3215"]
-
+      
 follower_arms:
   main:
     _target_: lerobot.common.robot_devices.motors.feetech.FeetechMotorsBus
-    port: /dev/lerobot_tty1
+    port: /dev/lerobot_left
     motors:
       # name: (index, model)
       shoulder_pan: [1, "sts3215"]
@@ -40,7 +40,7 @@ follower_arms:
       wrist_flex: [4, "sts3215"]
       wrist_roll: [5, "sts3215"]
       gripper: [6, "sts3215"]
-
+      
 cameras:
   right:
     _target_: lerobot.common.robot_devices.cameras.opencv.OpenCVCamera

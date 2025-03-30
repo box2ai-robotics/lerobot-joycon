@@ -18,7 +18,7 @@ max_relative_target: null
 follower_arms:
   main:
     _target_: lerobot.common.robot_devices.motors.feetech.FeetechMotorsBus
-    port: /dev/lerobot_tty1
+    port: /dev/lerobot_right
     motors:
       # name: (index, model)
       shoulder_pan: [1, "sts3215"]

@@ -31,7 +31,7 @@ This repository is a fork of the following projects,:
 
 (1) 归纳了几点模型、数据集优化意见🔨 
 
-(2) Diffusion Policy 参数修改优化意见🌟
+(2) Diffusion Transformer Policy 参数修改优化意见🌟
 
 (3) 适配joycon遥操做控制数据采集🎮🎮🎮。
 
@@ -45,7 +45,7 @@ This repository is a fork of the following projects,:
 
 ### 0. 系统要求
 
-  1. Ubuntu 20.04
+  1. Ubuntu 20.04, 22.04
   2. 可连接蓝牙设备
   
 ### 1. 安装micromamba或者MiniConda
@@ -132,7 +132,7 @@ python lerobot/scripts/find_motors_bus_port.py
 
 写入设备rules，保证每次机械臂顺序插的不一样也可以读取到正确的端口ID，避免左右臂插的顺序错误导致校准文件读取错误，错误运行损坏机械臂。配置步骤如下：
 
-  (1) 插入右边的机械臂（放置到右边自行记忆即可），这里``只能插入一根机械臂``到USB口，输入以下指令：
+  (1) 插入右边的（或者单臂）机械臂，这里``只能插入一根机械臂``到USB口，输入以下指令：
   
 ```shell
 udevadm info -a -n /dev/ttyACM* | grep serial
@@ -143,14 +143,14 @@ udevadm info -a -n /dev/ttyACM* | grep serial
 #     ATTRS{serial}=="58FA083324"
 #     ATTRS{serial}=="0000:00:14.0"
 ```
-(2) 将输出的上面的编码值输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第1行ATTRS{serial}中代表着lerobot_tty0右臂或者主臂
-(3) 拔掉刚才的机械臂，插上另一个机械臂（期望是右边的，或者是从臂），查看ID
+  (2) 将输出的上面的编码值输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第1行ATTRS{serial}中代表着lerobot_right右臂或者主臂
+  (3) 拔掉刚才的机械臂，插上另一个机械臂（期望是左边的，或者是从臂），查看ID
 
 
 ```shell
 udevadm info -a -n /dev/ttyACM* | grep serial # 如果只有一支臂，只需要改第一行
 ```
-  (4) 将输出的ID输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第2行ATTRS{serial}中代表着lerobot_tty1左臂或者从臂
+  (4) 将输出的ID输入到 [99-lerobot-serial.rules](lerobot/configs/robot/rules/99-lerobot-serial.rules) 的第2行ATTRS{serial}中代表着lerobot_left左臂或者从臂
   (5) 将规则文件写入Ubuntu系统目录
 
 ```shell
@@ -158,7 +158,7 @@ sudo cp lerobot/configs/robot/rules/99-lerobot-serial.rules /etc/udev/rules.d/
 sudo chmod +x /etc/udev/rules.d/99-lerobot-serial.rules
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
-  (6) 更新到 ``lerobot/configs/robot/so100.yaml`` 中的，主臂的port改成``/dev/lerobot_tty0``，从臂改成``/dev/lerobot_tty1``.（这是在99-lerobot-serial.rules中设置的）
+  (6) 更新到 ``lerobot/configs/robot/so100.yaml`` 中的，主臂的port改成``/dev/lerobot_right``，从臂改成``/dev/lerobot_left``.（这是在99-lerobot-serial.rules中设置的）
 
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
@@ -169,10 +169,10 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 ### 1. 校准指令
 
 这里``请插入两根机械臂``，如果按照上述顺序配置，对应关系如下，摆到对应位置之后，再命令终端``敲击回车``，进入下一个姿态矫正，各个姿态如下图所示。
-- ``左臂`` ==> 校准时会提示校准 ``main follower`` == lerobot_tty1
-- ``右臂`` ==> 校准时会提示校准 ``main leader`` == lerobot_tty0
+- ``左臂`` == lerobot_left ==> 校准时会提示校准 ``main follower`` 
+- ``右臂`` == lerobot_right ==> 校准时会提示校准 ``main leader`` 
 
-一般会从Follower开始，即``左边机械臂开始``，然后是右边机械臂,注意每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件
+一般会从Follower开始，即``左边机械臂开始``，然后是右边机械臂,注意每次校准会删除之前的校准文件，如果提前终止或者报错结束，将不存在校准文件。
 
 ```shell
 # 如果是双臂校准
@@ -188,9 +188,7 @@ python lerobot/scripts/control_robot.py calibrate \
 
 **注意``2 Rortated position``，整个机械臂姿态方向一定要观察清楚，并且转动每个关节的时候不要太快，容易烧坏电机。**
 
-如果报错``ValueError: No integer found between bounds [low_factor=-0.00146484375, upp_factor=-0.00146484375]``,则说明校准的时候主从比刚好反了，请重新运行上面的指令重新校准，从右边的机械臂开始。
-
-如果报错``ConnectionError: Read failed due to communication error on port /dev/lerobot_tty1 for group_key Torque_Enable_shoulder_pan_shoulder_lift_elbow_flex_wrist_flex_wrist_roll_gripper: [TxRxResult] There is no status packet!``，请重新插拔电源和USB线，如果还不行，可能是舵机线松了，请检查一下每一个电机的接线头
+如果报错``ConnectionError: Read failed due to communication error on port /dev/lerobot_right for group_key Torque_Enable_shoulder_pan_shoulder_lift_elbow_flex_wrist_flex_wrist_roll_gripper: [TxRxResult] There is no status packet!``，请重新插拔电源和USB线，如果还不行，可能是舵机线松了，请检查一下每一个电机的接线头
 
 | 1. Follower Zero position | 2. Follower Rotated position | 3. Follower Rest position |
 |---|---|---|
@@ -208,15 +206,8 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-overrides '~cameras' \
     --display-cameras 0
 ```
-<!-- 
-如果出现报错ImportError: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.30' not found，是因为系统库地址有问题，请在终端执行下面的指令：  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib
 
-!!如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，或者ImportError: /home/boxjod/miniforge3/envs/lerobot_plus/lib/python3.10/site-packages/cv2/python-3.10/../../../.././libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0，是因为torch版本的问题，请执行以下指令：
-
-```shell
-  python -m pip uninstall torch torchvision torchaudio
-  python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
-``` -->
+如果报错``ValueError: No integer found between bounds [low_factor=-0.00146484375, upp_factor=-0.00146484375]``,则说明双臂校准的时候主从比刚好反了，请重新运行上面的指令重新校准，从左边的机械臂开始。
 
 
 &nbsp;
@@ -234,7 +225,7 @@ python lerobot/common/robot_devices/cameras/opencv.py
   OpenCVCamera(2, fps=10, width=640, height=480, color_mode=rgb)
   OpenCVCamera(0, fps=30, width=640, height=480, color_mode=rgb)
 
-其中0是笔记本电脑的自带摄像头
+其中0是笔记本电脑的自带摄像头,(但是如果开机的时候插着摄像头，系统自检的时候可能会优先给usb相机赋索引号为0)
 
 <!-- ### 2. 配置相机参数
 
@@ -261,13 +252,6 @@ python lerobot/common/robot_devices/cameras/opencv.py
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100.yaml 
 ```
-
-<!-- !! 如果你遇到报错 undefined symbol: __nvJitLinkComplete_12_4, version libnvJitLink.so.12，是因为torch版本的问题，请执行以下指令：
-```shell
-  python -m pip uninstall torch torchvision torchaudio
-  python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
-```
-如果在lerobot工作空间安装了genesis会影响到torch版本，这个时候就要重新安装一下torch -->
 
 ### 4. 录制数据集
 
@@ -551,13 +535,17 @@ cd ..
 git clone https://github.com/box2ai-robotics/lerobot-kinematics.git
 cd lerobot-kinematics
 pip install -e .
+pip install mujoco==3.2.5
 ```
 
 ### 1. 蓝牙连接
 
  (1) 首次连接：长按3秒遥控器侧边小圆按钮进行蓝牙配对，在电脑中的蓝牙设备搜索中将出现“Joy-Con(R)”或者“Joy-Con(R)”点击匹配连接。
  
- (2) 连接成功之后，手柄将按照一定频率震动。如果单手柄运行，则同时按住两个扳机按钮3秒，如果是双手柄同时使用，则两只手柄都开始震动之后，同时按下左手柄的上扳机键（L）和有手柄的上扳机键（R）。此后，系统将分配固定的进程进行单手柄或双手柄的连接守护。
+ (2) 连接成功之后，手柄将按照一定频率**震动**。如果单手柄运行，则同时按住两个扳机按钮3秒，如果是双手柄同时使用，则两只手柄都开始震动之后，同时按下左手柄的上扳机键（L）和有手柄的上扳机键（R）。此后，系统将分配固定的进程进行单手柄或双手柄的连接守护。
+ | 1. 手柄配对 | 2. 手柄绑定 | 
+|---|---|
+| <img src="media/bocon/bocon_pair.png" alt="SO-100 follower arm zero position" title="SO-100 follower arm zero position" style="max-width: 600px; height: auto;"> | <img src="media/bocon/bocon_connection.png" alt="SO-100 follower arm rotated position" title="SO-100 follower arm rotated position" style="max-width: 600px; height: auto;"> 
  
  (3) 若已连接配对成功之后，下一次连接相同的电脑只需要按下上扳机键，即可自动搜索快速匹配，5秒内机会出现一定频率的“确定震动”，按照上一步的操作即可连接成功。
  
@@ -567,15 +555,15 @@ pip install -e .
 
 需要将上述机械臂校准的文件重命名一下: 
 
-``main_follower.json`` 拷贝重命名为 ``right_follower.json``;
+``main_leader.json`` 拷贝重命名为 ``right_follower.json``
 
-``main_leader.json`` 拷贝重命名为 ``left_follower.json``
+``main_follower.json`` 拷贝重命名为 ``left_follower.json``;
 
 可以执行下面的指令快速地重命名（在"."开头隐藏文件夹中，需要按"ctrl+H"开启显示）：
 
 ```shell
-cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json
-cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/left_follower.json
+cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/right_follower.json
+cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/left_follower.json
 ```
 
 (2) 单臂使用遥控器遥操作:
@@ -584,6 +572,14 @@ cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/left_follo
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
     --robot-overrides '~cameras' 
+```
+
+If you encounter error "GLFWError: (65543) b'GLX: Failed to create context: BadValue (integer paraneter out of range for operation)'
+warnings.warn(nessage,GLFWError) the Mu ERROR: could not create window" and are using ubuntu 21.04, it may be because your computer is using integrated graphics by default and does not support mujoco visualization, please run the following command to switch to discrete graphics.
+
+```shell
+sudo prime-select nvidia
+sudo reboot
 ```
 
 (3) 双臂使用遥控器遥操作:
@@ -681,6 +677,10 @@ python lerobot/scripts/control_robot.py record \
   
 ```
 
+如果你在训练的时候，遇到如下报错：
+“dataset.meta.stats[key][stats_type] = torch.tensor(stats, dtype=torch.float32)
+TypeError: 'NoneType' object is not subscriptable”
+原因是数据集破损，请在结束录制的时候按ESC键，而不是直接Ctrl+C结束程序
 
 双臂示例
 
