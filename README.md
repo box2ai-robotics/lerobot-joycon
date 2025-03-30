@@ -48,19 +48,14 @@ This repository is a fork of the following projects,:
   1. Ubuntu 20.04, 22.04
   2. 可连接蓝牙设备
   
-### 1. 安装micromamba或者MiniConda
+### 1. 安装MiniConda3
   
 ```shell
-# 安装micromamba
-"${SHELL}" <(curl -L micro.mamba.pm/install.sh)
-
-# 或者安装MiniConda
-# mkdir -p ~/miniconda3
-# bash Miniforge3-$(uname)-$(uname -m).sh
-# wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-# bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-# rm ~/miniconda3/miniconda.sh
-# ~/miniconda3/bin/conda init bash
+# 如果你没有安装conda
+mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm ~/miniconda3/miniconda.sh
 ```
 
 ### 2. 使用conda配置lerobot环境
@@ -71,22 +66,23 @@ conda activate lerobot
 # cd lerobot-joycon
 pip install -e .
 
-# 使用飞特舵机的版本
+# 使用飞特舵机的版本SO100
 pip install -e ".[feetech]"
 conda install -y -c conda-forge ffmpeg
 pip uninstall -y opencv-python
 conda install -y -c conda-forge "opencv>=4.10.0"
 
-# 配置库文件链接
-echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniforge3/envs/lerobot/lib' >> ~/.bashrc
+# 配置库文件链接，如果您没有安装miniconda3，请将其中的miniconda3更换成你的conda环境，或许是miniforge
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniconda3/envs/lerobot/lib' >> ~/.bashrc 
 source ~/.bashrc
 conda activate lerobot
 
-# 环境配置技巧
+# 环境配置tricks，请保证你已经安装了nvidia-driver，在【软件与更新=>附加驱动 中查看】
+sudo apt install nvidia-driver-<切换成你的版本>
 pip uninstall -y numpy pynput
 pip install numpy==1.24.4 pynput==1.7.7
 python -m pip uninstall -y torch torchvision torchaudio 
-python -m pip install -pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
+python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
 
 ```
 
@@ -157,6 +153,7 @@ udevadm info -a -n /dev/ttyACM* | grep serial # 如果只有一支臂，只需�
 sudo cp lerobot/configs/robot/rules/99-lerobot-serial.rules /etc/udev/rules.d/
 sudo chmod +x /etc/udev/rules.d/99-lerobot-serial.rules
 sudo udevadm control --reload-rules && sudo udevadm trigger
+# 如果中间设计输入密码，请重新运行
 ```
   (6) 更新到 ``lerobot/configs/robot/so100.yaml`` 中的，主臂的port改成``/dev/lerobot_right``，从臂改成``/dev/lerobot_left``.（这是在99-lerobot-serial.rules中设置的）
 
@@ -198,7 +195,12 @@ python lerobot/scripts/control_robot.py calibrate \
 |---|---|---|
 | <img src="./media/so100/leader_zero.webp?raw=true" alt="SO-100 leader arm zero position" title="SO-100 leader arm zero position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rotated.webp?raw=true" alt="SO-100 leader arm rotated position" title="SO-100 leader arm rotated position" style="max-width: 300px; height: auto;"> | <img src="./media/so100/leader_rest.webp?raw=true" alt="SO-100 leader arm rest position" title="SO-100 leader arm rest position" style="max-width: 300px; height: auto;"> | -->
 
-### 2. 无相机观察的遥操作测试（右臂遥控左臂）
+&nbsp;
+------------------------------------------------------------------------
+&nbsp;
+# (四) 记录数据集[【如果只有一只机械臂和手柄直接看（七）】](./README.md#L530)
+
+### 1. 无相机观察的遥操作测试（右臂遥控左臂）
 
 ```shell
 python lerobot/scripts/control_robot.py teleoperate \
@@ -210,12 +212,7 @@ python lerobot/scripts/control_robot.py teleoperate \
 如果报错``ValueError: No integer found between bounds [low_factor=-0.00146484375, upp_factor=-0.00146484375]``,则说明双臂校准的时候主从比刚好反了，请重新运行上面的指令重新校准，从左边的机械臂开始。
 
 
-&nbsp;
-------------------------------------------------------------------------
-&nbsp;
-# (四) 记录数据集[【如果只有一只机械臂和手柄直接看（七）】](./README.md#L530)
-
-### 1. 查看相机
+### 2. 查看相机
 
 ```shell
 python lerobot/common/robot_devices/cameras/opencv.py
@@ -562,8 +559,12 @@ pip install mujoco==3.2.5
 可以执行下面的指令快速地重命名（在"."开头隐藏文件夹中，需要按"ctrl+H"开启显示）：
 
 ```shell
+# 如果两只机械臂
 cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/right_follower.json
 cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/left_follower.json
+
+# 如果有一只机械臂
+cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json
 ```
 
 (2) 单臂使用遥控器遥操作:
