@@ -507,7 +507,6 @@ python lerobot/scripts/train.py \
 
 &nbsp;
 
-
 # (七)JoyCon手柄遥操作
 
 ### 0. 环境配置
@@ -589,6 +588,7 @@ python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
     --robot-overrides '~cameras' 
 ```
+如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
 
 #### (4) 使用教程：
 #### 坐标系说明
@@ -674,7 +674,6 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
     --episode 0 \
     --local-files-only 1
 
-
 # 2.0模型训练
 python lerobot/scripts/train.py \
   policy=act_so100_real_single \
@@ -710,7 +709,7 @@ python lerobot/scripts/control_robot.py record \
 TypeError: 'NoneType' object is not subscriptable”
 原因是数据集破损，请在结束录制的时候按ESC键，而不是直接Ctrl+C结束程序
 
-双臂示例
+#### 双臂示例
 
 ```shell
 # 1.0 数据采集
@@ -782,7 +781,7 @@ python lerobot/scripts/control_robot.py record \
   
 ```
 
-自定义
+#### 自定义
 
 ```shell
 # 1.数据录制
@@ -827,3 +826,10 @@ python lerobot/scripts/control_robot.py record \
   -p outputs/train/act_换成你的任务的名字如:pick/checkpoints/last/pretrained_model 
   
 ```
+
+
+# (八)更多
+1. 更多展示和相关视频可以关注[bilibili账号](https://space.bilibili.com/122291348)
+2. 更多讨论和交流可以加入QQ群：948755626
+
+如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
