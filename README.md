@@ -568,6 +568,8 @@ cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_fo
 #### (2) 单臂使用遥控器遥操作:
 
 ```shell
+# remember 
+# cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
     --robot-overrides '~cameras' 
@@ -584,6 +586,9 @@ sudo reboot
 #### (3) 双臂使用遥控器遥操作:
 
 ```shell
+# remember
+# cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/right_follower.json
+# cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/left_follower.json
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
     --robot-overrides '~cameras' 
