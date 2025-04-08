@@ -836,5 +836,6 @@ python lerobot/scripts/control_robot.py record \
 # (八)更多
 1. 更多展示和相关视频可以关注[bilibili账号](https://space.bilibili.com/122291348)
 2. 更多讨论和交流可以加入QQ群：948755626
+3. [点击这里](https://item.taobao.com/item.htm?abbucket=16&detail_redpacket_pop=true&id=906794552661&ltk2=17440907659690jpsj3h7uiismft7vle37&ns=1&skuId=5933796995638) 可以跳转我们的淘宝店铺，选购经过我们精心微调的机械臂和手柄套装
 
 如果你觉得这对你有帮助，请您帮我们点一颗小星星吧！ ⭐ ⭐ ⭐ ⭐ ⭐
