@@ -119,7 +119,7 @@ class JoyConController:
 
         else:
             self.target_gpos = self.target_gpos_last.copy()
-            self.joyconrobotics.set_position = self.target_gpos[0:3]
+            self.joyconrobotics.set_position(self.target_gpos[0:3])
             joint_angles = self.joint_angles_last
         
         # if button_control != 0:
