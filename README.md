@@ -108,9 +108,9 @@ Note: 建议``使用Vscode打开lerobot-joycon工程目录``，打开readme.md�
 
 # (二) 机械臂配置
 
-#### 配置单臂，请参考手册： [Single_tutorial.md](Single_tutorial.md)
+#### 配置1只机械臂 + 1只手柄，请参考手册： [Single_tutorial.md](Single_tutorial.md)
 
-#### 配置双臂，请参考手册： [Double_tutorial.md](Double_tutorial.md)
+#### 配置2只机械臂 + 2只手柄，请参考手册： [Double_tutorial.md](Double_tutorial.md)
 
 
 # (三)更多
