@@ -1,4 +1,8 @@
-# (一) 设备号绑定
+# 1只机械臂 + 1只手柄的配置说明（单臂操作）
+
+&nbsp;
+
+## (一) 设备号绑定
 
 不推荐[原版的端口设置方法](./bugs_Q&A.md#L11)。
 **原因**：写入设备rules做映射，保证每次机械臂顺序插的不一样也可以读取到正确的端口ID，避免左右臂插的顺序错误导致校准文件读取错误，错误运行损坏机械臂。配置步骤如下：
@@ -28,7 +32,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 &nbsp;
 
-# (二) 校准机械臂
+## (二) 校准机械臂
 
  (1) 这里``插入机械臂``及其``电源``，在终端输入下面的指令：
 
@@ -53,7 +57,7 @@ python lerobot/scripts/control_robot.py calibrate \
 
 &nbsp;
 
-# (三)JoyCon手柄依赖库安装
+## (三)JoyCon手柄依赖库安装
 
 ### 0. 依赖库安装
 
@@ -149,7 +153,7 @@ python lerobot/scripts/control_robot.py teleoperate \
 
 &nbsp;
 
-# (四)JoyCon手柄数据集采集
+## (四)JoyCon手柄数据集采集
 
 ### 1. 进行带相机图像的可视化遥操（插上相机）
 
@@ -230,7 +234,7 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
 
 &nbsp;
 
-# (五)本地化训练与推理
+## (五)本地化训练与推理
 
 由于Huggingface建议使用它们的云托管，所以本地训练模型需要一定的设置[本仓库已设置](bugs_Q&A.md#L98)
 
@@ -273,7 +277,7 @@ python lerobot/scripts/control_robot.py record \
 
 &nbsp;
 
-# (六) 进阶
+## (六) 进阶
 
 如果你按照步骤完成：``①机械臂配置 => ②数据集采集 => ③模型训练 => ④模型推理部署 => ⑤机械臂按照演示轨迹动起来``。
 
@@ -375,7 +379,7 @@ python lerobot/scripts/train.py \
 
 &nbsp;
 
-# (七)JoyCon手柄自定义任务采集训练和推理
+## (七)JoyCon手柄自定义任务采集训练和推理
 
 ```shell
 # 1.数据录制
@@ -423,7 +427,7 @@ python lerobot/scripts/control_robot.py record \
 
 &nbsp;
 
-# (八)更多
+## (八)更多
 1. 更多展示和相关视频可以关注[bilibili账号](https://space.bilibili.com/122291348)
 2. 更多讨论和交流可以加入QQ群：948755626
 3. [点击这里](https://item.taobao.com/item.htm?abbucket=16&detail_redpacket_pop=true&id=906794552661&ltk2=17440907659690jpsj3h7uiismft7vle37&ns=1&skuId=5933796995638) 可以跳转我们的淘宝店铺，选购经过我们精心微调的机械臂和手柄套装

@@ -1,4 +1,8 @@
-# (一) 设备号绑定
+# 2只机械臂 + 2只手柄的配置说明（双臂操作）
+
+&nbsp;
+
+## (一) 设备号绑定
 
 ### 1.设备号固定为自定义端口（Box推荐）
 
@@ -36,7 +40,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 &nbsp;
 
-# (二) 校准机械臂
+## (二) 校准机械臂
 
 ### 1. 校准指令
 
@@ -62,9 +66,8 @@ python lerobot/scripts/control_robot.py calibrate \
 - 如遇“failed due to communication error”报错，请查看[bugs_Q&A.md#L27](bugs_Q&A.md#L27)
 
 &nbsp;
-------------------------------------------------------------------------
-&nbsp;
-# (三) 记录数据集【主从模式采集测试】
+
+## (三) 记录数据集【主从模式采集测试】
 
 ### 1. 无相机观察的遥操作测试（右臂遥控左臂）
 
@@ -156,8 +159,7 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
 
 &nbsp;
 
-
-# (五) 本地训练和推理
+## (五) 本地训练和推理
 
 由于Huggingface建议使用它们的云托管，所以本地训练模型需要一定的设置[本仓库已设置](bugs_Q&A.md#L98)
 
@@ -198,7 +200,7 @@ python lerobot/scripts/control_robot.py record \
 ```
 &nbsp;
 
-# (六)JoyCon手柄遥操作
+## (六)JoyCon手柄遥操作
 
 ### 0. 环境配置
 
@@ -526,7 +528,7 @@ python lerobot/scripts/control_robot.py record \
   
 ```
 
-# (七) 进阶
+## (七) 进阶
 
 如果你按照步骤完成：``①机械臂配置 => ②数据集采集 => ③模型训练 => ④模型推理部署 => ⑤机械臂按照演示轨迹动起来``。
 
@@ -629,7 +631,7 @@ python lerobot/scripts/train.py \
 &nbsp;
 
 
-# (八)更多
+## (八)更多
 1. 更多展示和相关视频可以关注[bilibili账号](https://space.bilibili.com/122291348)
 2. 更多讨论和交流可以加入QQ群：948755626
 3. [点击这里](https://item.taobao.com/item.htm?abbucket=16&detail_redpacket_pop=true&id=906794552661&ltk2=17440907659690jpsj3h7uiismft7vle37&ns=1&skuId=5933796995638) 可以跳转我们的淘宝店铺，选购经过我们精心微调的机械臂和手柄套装
