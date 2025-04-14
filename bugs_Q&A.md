@@ -1,3 +1,5 @@
+# 报错与解决方案大全查找表
+
 ### 安装/下载/pip/apt/make通用报错
 
 ！！ 如果你遇到报错，请检查是否报错中存在 ``network`` ， ``timeout``等网络问题，请检查pip是否更换为国内镜像源，具体参考[pip清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/)，[Ubuntu apt清华源替换](https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/)
