@@ -234,6 +234,8 @@ class ManipulatorRobot:
         self.logs = {}
         
         self.button_control = 0
+        self.gripper_state = {}
+        self.gripper_state_last = {}
 
     def get_motor_names(self, arm: dict[str, MotorsBus]) -> list:
         return [f"{arm}_{motor}" for arm, bus in arm.items() for motor in bus.motors]
@@ -539,7 +541,7 @@ class ManipulatorRobot:
                 # Get positions from controller
                 before_controller_read_t = time.perf_counter()
                 present_pos = self.follower_arms[name].read("Present_Position")
-                controller_command[name], button_control = self.controllers[name].get_command(present_pos)   
+                controller_command[name], button_control, self.gripper_state[name] = self.controllers[name].get_command(present_pos)   
                 if name == 'right':
                     self.button_control = button_control         
                     
@@ -571,6 +573,20 @@ class ManipulatorRobot:
 
             goal_pos = goal_pos.numpy().astype(np.int32)
             self.follower_arms[name].write("Goal_Position", goal_pos)
+            
+            # torque feedback gripper moter protection
+            feedback = self.follower_arms[name].read("Present_Position")
+            Present_Load = self.follower_arms[name].read("Present_Load")
+            for idx in range(len(Present_Load)):
+                if Present_Load[idx] >= 1024:
+                    Present_Load[idx] = 1024 - Present_Load[idx]
+            # print("Present_Load", [f"{x:.3f}" for x in Present_Load])
+            if self.gripper_state[name] == 0 :
+                if Present_Load[5] > 100:
+                    goal_pos[5] = feedback[5]  
+            self.follower_arms[name].write("Goal_Position", goal_pos)  
+            self.gripper_state_last[name] = self.gripper_state[name]
+            
             self.logs[f"write_follower_{name}_goal_pos_dt_s"] = time.perf_counter() - before_fwrite_t
 
         # Early exit when recording data is not requested

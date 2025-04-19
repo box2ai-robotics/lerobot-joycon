@@ -125,4 +125,4 @@ class JoyConController:
         # if button_control != 0:
         #     self.joyconrobotics.reset_joycon()
             
-        return joint_angles, button_control
+        return joint_angles, button_control, gripper_state
