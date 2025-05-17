@@ -32,7 +32,7 @@ class JoyConController:
         self.mjdata = mujoco.MjData(self.mjmodel)
         
         self.robot = get_robot('so100')
-        self.glimit = [[0.125, -0.4,  0.046, -3.1, -1.5, -1.5], 
+        self.glimit = [[0.125, -0.4,  0.046, -1.3, -1.5, -1.5], 
                        [0.380,  0.4,  0.23,  3.1,  1.5,  1.5]]
         
         self.init_qpos = np.array([0.0, -3.14, 3.14, 0.0, -1.57, -0.157])
@@ -75,7 +75,7 @@ class JoyConController:
     def get_command(self, present_pose):
         
         target_pose, gripper_state, button_control = self.joyconrobotics.get_control()
-        # print("target_pose:", [f"{x:.3f}" for x in target_pose])
+        print("target_pose:", [f"{x:.3f}" for x in target_pose])
         
         for i in range(6):
             if target_pose[i] < self.glimit[0][i]:
