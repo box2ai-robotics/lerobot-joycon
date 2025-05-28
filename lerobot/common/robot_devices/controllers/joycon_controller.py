@@ -75,7 +75,7 @@ class JoyConController:
     def get_command(self, present_pose):
         
         target_pose, gripper_state, button_control = self.joyconrobotics.get_control()
-        print("target_pose:", [f"{x:.3f}" for x in target_pose])
+        # print("target_pose:", [f"{x:.3f}" for x in target_pose])
         
         for i in range(6):
             if target_pose[i] < self.glimit[0][i]:
