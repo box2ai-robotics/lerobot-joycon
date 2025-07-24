@@ -1,4 +1,8 @@
 # 2只机械臂 + 2只手柄的配置说明（双臂操作）
+<p align="center">
+  <a href="Double_tutorial_en.md">English</a> •
+  <a href="Double_tutorial.md">中文</a> 
+</p>
 
 &nbsp;
 
@@ -452,7 +456,7 @@ DATA_DIR=data python lerobot/scripts/control_robot.py replay \
     --local-files-only 1
 
 
-# 2.0模型训练
+# 2. 模型训练
 python lerobot/scripts/train.py \
   policy=act_so100_real_double \
   env=so100_real_double \
@@ -522,6 +526,7 @@ python lerobot/scripts/control_robot.py record \
   --episode-time-s 你想采集的每个数据集的最大时长（秒）如:40 \
   --reset-time-s 采集间隔你想等待多长时间（秒）如:5 \
   --num-episodes 你想录多少个数据如:50 \
+  --root datasets/换成你的任务的名字如:pick \
   --repo-id task/eval_换成你的任务的名字如:pick \
   --single-task eval_换成你的任务的名字如:pick \
   -p outputs/train/act_换成你的任务的名字如:pick/checkpoints/last/pretrained_model 
@@ -575,6 +580,7 @@ python lerobot/scripts/control_robot.py record \
   --reset-time-s 5 \
   --num-episodes 10 \
   --local-files-only 1 \
+  --root datasets/换成你的任务的名字如:pick \
   --repo-id task/eval_换成你的任务的名字如:pick \
   --single-task eval_换成你的任务的名字如:pick \
   -p outputs/train/act_换成你的任务的名字如:pick/checkpoints/last/pretrained_model 

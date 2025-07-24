@@ -1,5 +1,10 @@
 # LeRobot-JoyCon: Making AI for Robotics more accessible and Portable with JoyCon
 
+<p align="center">
+  <a href="README_en.md">English</a> •
+  <a href="README.md">中文</a> 
+</p>
+
 ## Declaration
 
 This is a Lerobot branch for local acquisition deployment for the Chinese community (for some reason), and adds portable controls for Joycon as well as positive and negative kinematics controls.
@@ -8,6 +13,7 @@ This repository is a fork of the following projects,:
 - [lerobot](https://github.com/huggingface/lerobot)
 - [joycon-robotics](https://github.com/box2ai-robotics/joycon-robotics)
 - [lerobot-kinematics](https://github.com/box2ai-robotics/lerobot-kinematics)
+
 
 &nbsp;
 
@@ -80,8 +86,8 @@ conda activate lerobot
 
 # 环境配置技巧，请保证你已经安装了nvidia-driver，在【软件与更新=>附加驱动 中查看】
 # sudo apt install nvidia-driver-<切换成你的版本>
-pip uninstall -y numpy pynput
-pip install numpy==1.24.4 pynput==1.7.7
+pip uninstall -y numpy pynput datasets
+pip install numpy==1.24.4 pynput==1.7.7 datasets==3.4.1
 python -m pip uninstall -y torch torchvision torchaudio 
 python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
 ```

@@ -25,6 +25,7 @@ from lerobot.common.robot_devices.utils import busy_wait
 from lerobot.common.utils.utils import get_safe_torch_device, init_hydra_config, set_global_seed
 from lerobot.scripts.eval import get_pretrained_policy_path
 
+from lerobot.common.robot_devices.motors.feetech import TorqueMode
 
 def log_control_info(robot: Robot, dt_s, episode_index=None, frame_index=None, fps=None):
     log_items = []
@@ -255,41 +256,55 @@ def control_loop(
 
     timestamp = 0
     start_episode_t = time.perf_counter()
+    
     while timestamp < control_time_s:
-        start_loop_t = time.perf_counter()
+        try:
+            start_loop_t = time.perf_counter()
 
-        if teleoperate:
-            observation, action = robot.teleop_step(record_data=True)
-        else:
-            observation = robot.capture_observation()
+            if teleoperate:
+                observation, action = robot.teleop_step(record_data=True)
+            else:
+                observation = robot.capture_observation()
 
-            if policy is not None:
-                pred_action = predict_action(observation, policy, device, use_amp)
-                # Action can eventually be clipped using `max_relative_target`,
-                # so action actually sent is saved in the dataset.
-                action = robot.send_action(pred_action)
-                action = {"action": action}
+                if policy is not None:
+                    pred_action = predict_action(observation, policy, device, use_amp)
+                    # Action can eventually be clipped using `max_relative_target`,
+                    # so action actually sent is saved in the dataset.
+                    action = robot.send_action(pred_action)
+                    action = {"action": action}
 
-        if dataset is not None:
-            frame = {**observation, **action}
-            dataset.add_frame(frame)
+            if dataset is not None:
+                frame = {**observation, **action}
+                dataset.add_frame(frame)
 
-        if display_cameras and not is_headless():
-            image_keys = [key for key in observation if "image" in key]
-            for key in image_keys:
-                cv2.imshow(key, cv2.cvtColor(observation[key].numpy(), cv2.COLOR_RGB2BGR))
-            cv2.waitKey(1)
+            if display_cameras and not is_headless():
+                image_keys = [key for key in observation if "image" in key]
+                for key in image_keys:
+                    cv2.imshow(key, cv2.cvtColor(observation[key].numpy(), cv2.COLOR_RGB2BGR))
+                cv2.waitKey(1)
 
-        if fps is not None:
+            if fps is not None:
+                dt_s = time.perf_counter() - start_loop_t
+                busy_wait(1 / fps - dt_s)
+
             dt_s = time.perf_counter() - start_loop_t
-            busy_wait(1 / fps - dt_s)
+            log_control_info(robot, dt_s, fps=fps)
 
-        dt_s = time.perf_counter() - start_loop_t
-        log_control_info(robot, dt_s, fps=fps)
-
-        timestamp = time.perf_counter() - start_episode_t
-        if events["exit_early"] or robot.button_control != 0:
-            events["exit_early"] = False
+            timestamp = time.perf_counter() - start_episode_t
+            if events["exit_early"] or robot.button_control != 0:
+                events["exit_early"] = False
+                break
+            
+        except KeyboardInterrupt:
+            logging.warning("用户中断(Ctrl+C)，正在停止控制循环...")
+            events["exit_early"] = True
+            # for name in self.follower_arms:
+            #     self.follower_arms[name].write("Torque_Enable", TorqueMode.DISABLED.value)
+            robot.disconnect()
+            break
+        except Exception as e:
+            logging.error(f"控制循环异常: {e}", exc_info=True)
+            events["exit_early"] = True
             break
 
 

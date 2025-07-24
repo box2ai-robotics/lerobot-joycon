@@ -1,5 +1,10 @@
 # 1只机械臂 + 1只手柄的配置说明（单臂操作）
 
+<p align="center">
+  <a href="Single_tutorial_en.md">English</a> •
+  <a href="Single_tutorial.md">中文</a> 
+</p>
+
 &nbsp;
 
 ## (一) 设备号绑定

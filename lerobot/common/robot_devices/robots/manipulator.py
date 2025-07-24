@@ -718,11 +718,14 @@ class ManipulatorRobot:
         # TODO(aliberts): move robot-specific logs logic here
 
     def disconnect(self):
+        from lerobot.common.robot_devices.motors.feetech import TorqueMode
         if not self.is_connected:
             raise RobotDeviceNotConnectedError(
                 "ManipulatorRobot is not connected. You need to run `robot.connect()` before disconnecting."
             )
-
+        for name in self.follower_arms:
+            self.follower_arms[name].write("Torque_Enable", TorqueMode.DISABLED.value)
+            
         for name in self.follower_arms:
             self.follower_arms[name].disconnect()
 
