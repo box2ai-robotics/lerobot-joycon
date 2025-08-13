@@ -30,7 +30,7 @@ udevadm info -a -n /dev/ttyACM* | grep serial
 
 ```shell
 sudo cp lerobot/configs/robot/rules/99-lerobot-serial.rules /etc/udev/rules.d/
-sudo chmod +x /etc/udev/rules.d/99-lerobot-serial.rules
+sudo chmod +x /etc/udev/rules.d/99-lerobot-serial.rules                    
 sudo udevadm control --reload-rules && sudo udevadm trigger
 # 如果中间设计输入密码，请重新运行。(正常运行鼠标会卡一下)
 ```
@@ -225,7 +225,7 @@ rerun datasets/pick_put/visualize/task_pick_put_episode_0.rrd
 
 <img src="media/rerun.png" style="width: 600px;" />
 
-### 4. 可视化数据集
+### 4. 重播数据集
 机械臂将重复曾经录制的一个轨迹（注意机械臂会按照之前的采集轨迹运动）
 ```shell
 DATA_DIR=data python lerobot/scripts/control_robot.py replay \

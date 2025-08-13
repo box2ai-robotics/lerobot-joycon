@@ -76,7 +76,7 @@ def configure_motor(port, brand, model, motor_idx_des, baudrate_des):
                         "Error: More than one motor ID detected. This script is designed to only handle one motor at a time. Please disconnect all but one motor."
                     )
                 motor_index = present_ids[0]
-
+            break
         if motor_index == -1:
             raise ValueError("No motors detected. Please ensure you have one motor connected.")
 

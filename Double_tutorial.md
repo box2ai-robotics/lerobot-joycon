@@ -200,6 +200,7 @@ python lerobot/scripts/control_robot.py record \
   --local-files-only 1 \
   --repo-id task/eval_so100_test \
   --single-task eval_so100_test \
+  --root datasets/eval_so100_test \
   -p outputs/train/act_so100_test/checkpoints/last/pretrained_model 
 ```
 &nbsp;
@@ -272,7 +273,8 @@ cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/left_fol
 
 ```shell
 # remember 
-# cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json
+cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/right_follower.json
+
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_single.yaml \
     --robot-overrides '~cameras' 
@@ -288,8 +290,9 @@ python lerobot/scripts/control_robot.py teleoperate \
 
 ```shell
 # remember
-# cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/right_follower.json
-# cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/left_follower.json
+cp .cache/calibration/so100/main_leader.json .cache/calibration/so100/right_follower.json
+cp .cache/calibration/so100/main_follower.json .cache/calibration/so100/left_follower.json
+
 python lerobot/scripts/control_robot.py teleoperate \
     --robot-path lerobot/configs/robot/so100_joycon_double.yaml \
     --robot-overrides '~cameras' 

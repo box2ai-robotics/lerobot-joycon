@@ -63,6 +63,8 @@ mkdir -p ~/miniconda3
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
 bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
 rm ~/miniconda3/miniconda.sh
+source ~/miniconda3/bin/activate
+conda init --all
 ```
 
 ### 2. 使用conda配置lerobot环境
@@ -80,27 +82,27 @@ pip uninstall -y opencv-python
 conda install -y -c conda-forge "opencv>=4.10.0"
 
 # 配置库文件链接，如果您没有安装miniconda3，请将其中的miniconda3更换成你的conda环境，或许是miniforge
-echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/miniconda3/envs/lerobot/lib' >> ~/.bashrc 
-source ~/.bashrc
-conda activate lerobot
+echo 'export LD_LIBRARY_PATH=~/miniconda3/envs/lerobot/lib:$LD_LIBRARY_PATH' >> ~/.bashrc 
+source ~/.bashrc 
+conda activate lerobot 
 
 # 环境配置技巧，请保证你已经安装了nvidia-driver，在【软件与更新=>附加驱动 中查看】
 # sudo apt install nvidia-driver-<切换成你的版本>
-pip uninstall -y numpy pynput datasets
-pip install numpy==1.24.4 pynput==1.7.7 datasets==3.4.1
+pip uninstall -y numpy pynput datasets 
+pip install numpy==1.24.4 pynput==1.7.7 datasets==3.4.1 
 python -m pip uninstall -y torch torchvision torchaudio 
-python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
+python -m pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121 
 ```
 
 - network网络报错，请查看[bugs_Q&A.md#L1](bugs_Q&A.md#L1)
 
-### 3. Lerobot 目录简述
+### 3. Lerobot 目录简述 
 
-  (1) 主要的模型和配置文件在``lerobot``中，其余同级目录如docker,media等不重要
-  
-  (2) 主要**配置**文件夹是``lerobot/configs``，其中重点关注，
-  - ``机器人(robot)``的``lerobot/configs/robot/so100.yaml``
-  - ``模型(policy)``的``lerobot/configs/policy/act_so100_real.yaml``
+  (1) 主要的模型和配置文件在``lerobot``中，其余同级目录如docker,media等不重要 
+   
+  (2) 主要**配置**文件夹是``lerobot/configs``，其中重点关注， 
+  - ``机器人(robot)``的``lerobot/configs/robot/so100.yaml`` 
+  - ``模型(policy)``的``lerobot/configs/policy/act_so100_real.yaml`` 
   
   (3) ``lerobot/scripts``中的``lerobot/scripts/control_robot.py``是控制机器人的入口python程序。
   
