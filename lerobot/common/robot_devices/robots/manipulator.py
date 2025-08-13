@@ -585,6 +585,12 @@ class ManipulatorRobot:
                 if self.gripper_state[name] == 0 :
                     if Present_Load[-1] > 150:
                         goal_pos[-1] = feedback[-1]  
+                        
+                # add all motors
+                for idx in range(len(Present_Load)):
+                    if Present_Load[-1] > 200:
+                        goal_pos[-1] = feedback[-1]  
+                        
                 self.follower_arms[name].write("Goal_Position", goal_pos)  
                 self.gripper_state_last[name] = self.gripper_state[name]
                 

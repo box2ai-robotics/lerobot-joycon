@@ -1,3 +1,3 @@
-SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="5A46083322", MODE="0777", SYMLINK+="lerobot_right"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="5AB0184060", MODE="0777", SYMLINK+="lerobot_right"
 SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ATTRS{serial}=="0000000000", MODE="0777", SYMLINK+="lerobot_left"
 
