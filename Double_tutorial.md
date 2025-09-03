@@ -44,7 +44,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 &nbsp;
 
-## (二) 校准机械臂
+## (二) 校准机械臂(2025年9月1日之后，从盒子桥店铺购买的机械臂无需进行校准)
 
 ### 1. 校准指令
 
